@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>佐賀の戦国武将タイプ診断 | 佐賀戦国研究会</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700;900&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hakuji:   #f9f4ed;   /* 白磁 */
+  --hakuji-warm: #f2ead8;
+  --ai:       #1a3a5c;   /* 染付藍 */
+  --ai-mid:   #2a5482;
+  --ai-light: #5b88b8;
+  --shu:      #c8361a;   /* 朱赤 */
+  --shu-light:#e05530;
+  --midori:   #3d7a35;   /* 若草緑 */
+  --midori-light: #5aaa4a;
+  --yamabuki: #c89010;   /* 山吹黄 */
+  --kin:      #c4861a;   /* 金彩 */
+  --kin-light:#e8b840;
+  --beni:     #8b2252;   /* 紅梅 — 家晴 */
+  --beni-light:#c05080;
+  --fuji:     #5c4a8a;   /* 藤紫 — 信景 */
+  --fuji-light:#8a72c0;
+  --sagamidori: #1a6b5a;
+  --sagamidori-light:#2a9b80;
+  --seiji: #4a7a6a;
+  --seiji-light:#6aa090;
+  --shadow:   rgba(26,58,92,0.22);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body {
+  font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;
+  background: var(--hakuji);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── 色鍋島 背景文様（牡丹唐草） ── */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(26,58,92,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 100% 100%, rgba(200,54,26,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 0% 80%, rgba(61,122,53,0.05) 0%, transparent 60%);
+}
+
+/* ── SVG背景文様タイル ── */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ccircle cx='60' cy='60' r='50' fill='none' stroke='%231a3a5c' stroke-width='1.2'/%3E%3Ccircle cx='60' cy='60' r='35' fill='none' stroke='%231a3a5c' stroke-width='0.7'/%3E%3Cpath d='M60 10 Q75 35 60 60 Q45 35 60 10Z' fill='none' stroke='%231a3a5c' stroke-width='0.8'/%3E%3Cpath d='M60 110 Q75 85 60 60 Q45 85 60 110Z' fill='none' stroke='%231a3a5c' stroke-width='0.8'/%3E%3Cpath d='M10 60 Q35 75 60 60 Q35 45 10 60Z' fill='none' stroke='%231a3a5c' stroke-width='0.8'/%3E%3Cpath d='M110 60 Q85 75 60 60 Q85 45 110 60Z' fill='none' stroke='%231a3a5c' stroke-width='0.8'/%3E%3Ccircle cx='60' cy='60' r='6' fill='%231a3a5c' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+#app {
+  position:relative;
+  z-index:1;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-bottom:60px;
+}
+
+.screen {
+  width:100%;
+  max-width:660px;
+  padding:0 18px;
+}
+
+/* ── 言語切替 ── */
+.lang-bar {
+  width:100%;
+  max-width:660px;
+  display:flex;
+  justify-content:flex-end;
+  padding:10px 18px 0;
+  gap:5px;
+  margin:0 auto;
+}
+.lang-btn {
+  background:transparent;
+  border:1px solid rgba(26,58,92,0.3);
+  color:rgba(26,58,92,0.6);
+  font-family:'Noto Serif JP',serif;
+  font-size:11px;
+  padding:4px 10px;
+  cursor:pointer;
+  border-radius:1px;
+  letter-spacing:.05em;
+  transition:all .2s;
+}
+.lang-btn.active,.lang-btn:hover {
+  background:var(--ai);
+  border-color:var(--ai);
+  color:var(--hakuji);
+}
+
+/* ════════════════════════════
+   ヘッダー
+════════════════════════════ */
+.header {
+  text-align:center;
+  padding:22px 0 18px;
+}
+.header-org {
+  font-size:10px;
+  letter-spacing:.28em;
+  color:var(--ai-light);
+  margin-bottom:14px;
+  font-weight:300;
+}
+
+/* 色鍋島紋章SVG */
+.header-emblem {
+  width:88px;
+  height:88px;
+  margin:0 auto 14px;
+  animation: float 5s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(200,54,26,0.18));
+}
+
+.header-title {
+  font-family:'Shippori Mincho B1',serif;
+  font-size:clamp(19px,5vw,28px);
+  color:var(--ai);
+  letter-spacing:.2em;
+  line-height:1.65;
+  font-weight:800;
+}
+.header-title-en {
+  font-size:11px;
+  color:var(--ai-light);
+  letter-spacing:.15em;
+  margin-top:6px;
+  font-weight:300;
+}
+
+/* ── 色鍋島風 区切り線 ── */
+.divider {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:16px 0;
+}
+.divider::before,.divider::after {
+  content:'';
+  flex:1;
+  height:2px;
+  background: linear-gradient(to right,
+    transparent,
+    var(--shu) 20%,
+    var(--yamabuki) 50%,
+    var(--shu) 80%,
+    transparent);
+  opacity:.55;
+}
+.divider-icon { font-size:16px; }
+
+/* ════════════════════════════
+   色鍋島カード
+   白磁に朱・緑・黄の縁飾り
+════════════════════════════ */
+.iro-card {
+  background:var(--hakuji);
+  border:2px solid var(--ai);
+  position:relative;
+  padding:26px 22px;
+  margin-bottom:14px;
+  box-shadow:
+    0 6px 28px var(--shadow),
+    0 1px 0 rgba(255,255,255,0.9) inset;
+}
+
+/* 四辺カラーボーダー（色鍋島の縁の色合い） */
+.iro-card::before {
+  content:'';
+  position:absolute;
+  top:4px;left:4px;right:4px;bottom:4px;
+  border:1px solid rgba(200,144,16,0.35);
+  pointer-events:none;
+}
+
+/* 上辺 色鍋島帯（朱→金→緑） */
+.card-stripe {
+  height:5px;
+  margin:-26px -22px 22px;
+  background: linear-gradient(to right,
+    var(--shu) 0%,
+    var(--shu) 20%,
+    var(--yamabuki) 35%,
+    var(--kin-light) 50%,
+    var(--yamabuki) 65%,
+    var(--midori) 80%,
+    var(--midori) 100%);
+  position:relative;
+}
+.card-stripe::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,transparent 8px,
+    rgba(255,255,255,.35) 8px,rgba(255,255,255,.35) 9px
+  );
+}
+
+/* ── 武将カード（イントロ用）── */
+.warrior-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:14px 0;
+}
+.warrior-card {
+  background:var(--hakuji-warm);
+  border:1.5px solid var(--ai);
+  padding:12px 10px;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  position:relative;
+  overflow:hidden;
+  transition:transform .2s;
+}
+.warrior-card:hover { transform:translateY(-2px); }
+
+/* 色鍋島風 コーナー装飾 */
+.warrior-card::after {
+  content:'';
+  position:absolute;
+  bottom:0;right:0;
+  width:24px;height:24px;
+  background: linear-gradient(135deg,transparent 50%,rgba(200,54,26,.15) 50%);
+}
+
+.warrior-emoji {
+  width:44px;
+  height:44px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:visible;
+}
+.warrior-emoji svg {
+  width:44px;
+  height:44px;
+  overflow:visible;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.18));
+}
+.warrior-name-ja {
+  font-size:12px;
+  color:var(--ai);
+  font-weight:700;
+  line-height:1.4;
+}
+.warrior-role {
+  font-size:10px;
+  color:var(--shu);
+  margin-top:3px;
+  letter-spacing:.04em;
+}
+
+/* ── スタートボタン ── */
+
+/* ── 武将解説モーダル ── */
+.modal-overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(26,22,16,0.72);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  animation:fadeIn .2s ease;
+}
+.modal-box {
+  background:var(--hakuji);
+  border:2px solid var(--kin);
+  max-width:560px;
+  width:100%;
+  max-height:85vh;
+  overflow-y:auto;
+  position:relative;
+  box-shadow:0 8px 40px rgba(26,22,16,0.5);
+  animation:fadeUp .25s ease;
+}
+/* ウォーターマーク */
+.modal-box::after {
+  content:'© 佐賀戦国研究会';
+  position:fixed;
+  bottom:0;left:0;right:0;
+  pointer-events:none;
+  font-family:'Noto Serif JP',serif;
+  font-size:11px;
+  letter-spacing:.18em;
+  color:rgba(28,53,87,0.13);
+  text-align:center;
+  padding:6px 0;
+  z-index:200;
+  background: repeating-linear-gradient(
+    -30deg,
+    transparent,
+    transparent 48px,
+    rgba(28,53,87,0.045) 48px,
+    rgba(28,53,87,0.045) 49px
+  );
+}
+/* 斜めウォーターマーク（モーダル内コンテンツ背景） */
+
+.modal-credit {
+  margin-top:18px;
+  padding:8px 0 4px;
+  border-top:1px solid rgba(28,53,87,.12);
+  font-size:10px;
+  letter-spacing:.18em;
+  color:rgba(28,53,87,.45);
+  text-align:center;
+  font-family:'Noto Serif JP',serif;
+}
+
+.modal-inner {
+  position:relative;
+}
+.modal-inner::before {
+  content:'佐賀戦国研究会  佐賀戦国研究会  佐賀戦国研究会';
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-25deg);
+  white-space:nowrap;
+  font-family:'Noto Serif JP',serif;
+  font-size:13px;
+  letter-spacing:.3em;
+  color:rgba(28,53,87,0.07);
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+  width:200%;
+  text-align:center;
+  line-height:3.5;
+}
+.modal-stripe {
+  height:5px;
+  background:linear-gradient(to right,var(--shu),var(--yamabuki),var(--midori));
+}
+.modal-inner { padding:22px 20px; }
+.modal-close {
+  position:absolute;
+  top:10px;right:12px;
+  background:transparent;
+  border:none;
+  font-size:22px;
+  color:var(--ai);
+  cursor:pointer;
+  line-height:1;
+  padding:4px 8px;
+  transition:opacity .2s;
+}
+.modal-close:hover { opacity:.6; }
+.modal-sensu {
+  width:52px;height:52px;
+  float:left;
+  margin:0 14px 8px 0;
+  overflow:visible;
+}
+.modal-sensu svg { width:52px;height:52px;overflow:visible; }
+.modal-name {
+  font-family:'Shippori Mincho B1',serif;
+  font-size:clamp(18px,5vw,24px);
+  color:var(--ai);
+  font-weight:800;
+  letter-spacing:.15em;
+  line-height:1.3;
+}
+.modal-yomi {
+  font-size:11px;
+  color:var(--ai-light);
+  letter-spacing:.15em;
+  margin-bottom:4px;
+}
+.modal-sub {
+  display:inline-block;
+  background:var(--ai);
+  color:var(--hakuji);
+  font-size:10px;
+  letter-spacing:.15em;
+  padding:3px 12px;
+  margin:6px 0 14px;
+}
+.modal-section-label {
+  font-size:9px;
+  letter-spacing:.25em;
+  color:var(--ai);
+  font-weight:700;
+  border-bottom:1px solid rgba(28,53,87,.2);
+  padding-bottom:4px;
+  margin:14px 0 8px;
+  clear:both;
+}
+.modal-desc {
+  font-size:13px;
+  color:var(--sumi);
+  line-height:2;
+  text-align:justify;
+}
+.modal-traits {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:4px;
+}
+.modal-trait {
+  background:rgba(28,53,87,.07);
+  border:1px solid rgba(28,53,87,.2);
+  color:var(--ai);
+  font-size:11px;
+  padding:3px 10px;
+}
+.modal-saga {
+  background:rgba(28,53,87,.05);
+  border-left:3px solid var(--ai);
+  padding:10px 12px;
+  margin-top:8px;
+  font-size:12px;
+  color:var(--sumi);
+  line-height:1.8;
+}
+.warrior-card { cursor:pointer; }
+.warrior-card:hover .warrior-name-ja { text-decoration:underline; }
+
+.btn-start {
+  display:block;
+  width:100%;
+  background: linear-gradient(135deg, var(--ai) 0%, var(--ai-mid) 100%);
+  border:2px solid var(--kin);
+  color:var(--hakuji);
+  font-family:'Shippori Mincho B1',serif;
+  font-size:17px;
+  letter-spacing:.25em;
+  padding:18px;
+  cursor:pointer;
+  margin-top:18px;
+  position:relative;
+  overflow:hidden;
+  transition:all .3s;
+}
+.btn-start::before {
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  transition:left .5s;
+}
+.btn-start:hover::before { left:100%; }
+.btn-start:hover {
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(26,58,92,.35);
+}
+
+.intro-text {
+  font-size:13.5px;
+  color:var(--sumi);
+  line-height:2.1;
+  text-align:justify;
+}
+
+/* ════════════════════════════
+   クイズ
+════════════════════════════ */
+.progress-wrap { margin-bottom:18px; }
+.progress-meta {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+.progress-label {
+  font-size:10px;
+  letter-spacing:.18em;
+  color:var(--ai-light);
+}
+.progress-pct {
+  font-family:'Shippori Mincho B1',serif;
+  font-size:13px;
+  color:var(--shu);
+  font-weight:700;
+}
+.progress-track {
+  height:5px;
+  background:rgba(26,58,92,.12);
+  border-radius:0;
+  overflow:hidden;
+  position:relative;
+}
+.progress-fill {
+  height:100%;
+  background: linear-gradient(to right, var(--shu), var(--yamabuki), var(--midori));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+.progress-dots {
+  display:flex;
+  gap:6px;
+  margin-top:7px;
+}
+.pdot {
+  width:7px;height:7px;
+  border-radius:50%;
+  border:1.5px solid rgba(26,58,92,.3);
+  background:transparent;
+  transition:all .3s;
+}
+.pdot.done  { background:var(--ai); border-color:var(--ai); opacity:.7; }
+.pdot.cur   { background:var(--shu); border-color:var(--shu); transform:scale(1.3); }
+
+.q-badge {
+  display:inline-block;
+  background:var(--shu);
+  color:var(--hakuji);
+  font-size:9px;
+  letter-spacing:.2em;
+  padding:3px 10px;
+  margin-bottom:12px;
+}
+.q-text {
+  font-size:clamp(14.5px,3.5vw,17px);
+  color:var(--sumi);
+  line-height:1.95;
+  font-weight:600;
+  margin-bottom:20px;
+}
+
+/* 選択肢ボタン */
+.choices { display:flex; flex-direction:column; gap:8px; }
+
+.choice-btn {
+  background:var(--hakuji);
+  border:1.5px solid rgba(26,58,92,.22);
+  padding:14px 16px 14px 46px;
+  font-family:'Noto Serif JP',serif;
+  font-size:13px;
+  color:var(--sumi);
+  cursor:pointer;
+  text-align:left;
+  line-height:1.7;
+  position:relative;
+  width:100%;
+  transition:all .2s;
+  display:block;
+}
+
+/* 色鍋島 丸文マーカー */
+.choice-btn::before {
+  content:'';
+  position:absolute;
+  left:16px;
+  top:50%;
+  transform:translateY(-50%);
+  width:16px;height:16px;
+  border-radius:50%;
+  border:2px solid rgba(26,58,92,.3);
+  background:var(--hakuji);
+  transition:all .22s;
+}
+
+/* 縦ライン（染付風） */
+.choice-btn::after {
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:var(--shu);
+  transform:scaleY(0);
+  transform-origin:top;
+  transition:transform .2s;
+}
+
+.choice-btn:hover {
+  border-color:var(--ai-mid);
+  background:rgba(26,58,92,.04);
+  transform:translateX(4px);
+}
+.choice-btn:hover::before {
+  border-color:var(--ai-mid);
+  background:rgba(26,58,92,.1);
+}
+.choice-btn:hover::after { transform:scaleY(1); }
+
+.choice-btn.selected {
+  background:rgba(200,54,26,.06);
+  border-color:var(--shu);
+  border-left-width:3px;
+  padding-left:48px;
+}
+.choice-btn.selected::before {
+  background:var(--shu);
+  border-color:var(--shu);
+  box-shadow:0 0 0 3px rgba(200,54,26,.18);
+}
+.choice-btn.selected::after { transform:scaleY(1); }
+
+.nav { display:flex; justify-content:flex-end; margin-top:16px; }
+.btn-next {
+  background:var(--ai);
+  border:1.5px solid var(--kin);
+  color:var(--hakuji);
+  font-family:'Noto Serif JP',serif;
+  font-size:13px;
+  letter-spacing:.12em;
+  padding:12px 28px;
+  cursor:pointer;
+  transition:all .22s;
+  position:relative;
+  overflow:hidden;
+}
+.btn-next:hover:not(:disabled) {
+  background:var(--ai-mid);
+  transform:translateX(2px);
+  box-shadow:0 4px 12px rgba(26,58,92,.3);
+}
+.btn-next:disabled { opacity:.32; cursor:not-allowed; }
+
+/* ════════════════════════════
+   結果画面
+════════════════════════════ */
+
+/* ヒーロー帯 — 色鍋島の華やかさ */
+.result-hero-band {
+  background: linear-gradient(160deg, var(--ai) 0%, #0d2540 100%);
+  padding:28px 22px 24px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+
+/* 色鍋島文様オーバーレイ */
+.result-hero-band::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  opacity:.1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='25' fill='none' stroke='%23f9f4ed' stroke-width='1'/%3E%3Cpath d='M30 5 Q40 20 30 30 Q20 20 30 5Z' fill='%23f9f4ed' opacity='0.5'/%3E%3Cpath d='M30 55 Q40 40 30 30 Q20 40 30 55Z' fill='%23f9f4ed' opacity='0.5'/%3E%3Cpath d='M5 30 Q20 40 30 30 Q20 20 5 30Z' fill='%23f9f4ed' opacity='0.5'/%3E%3Cpath d='M55 30 Q40 40 30 30 Q40 20 55 30Z' fill='%23f9f4ed' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* 朱・緑・黄 の3色帯ライン */
+.result-hero-band::after {
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:5px;
+  background: linear-gradient(to right,
+    var(--shu) 0%,var(--shu) 33%,
+    var(--yamabuki) 33%,var(--yamabuki) 66%,
+    var(--midori) 66%,var(--midori) 100%);
+}
+
+.result-kamon-wrap {
+  position:relative;
+  display:inline-block;
+  margin-bottom:12px;
+  animation:float 4s ease-in-out infinite;
+}
+.result-kamon-wrap svg { width:96px; height:96px; }
+.result-sensu-over {
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-54%);
+  width:72px;
+  height:72px;
+  overflow:visible;
+}
+.result-sensu-over svg {
+  width:72px;
+  height:72px;
+  overflow:visible;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.3));
+}
+
+.result-type-badge {
+  display:inline-block;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.3);
+  color:rgba(249,244,237,.8);
+  font-size:10px;
+  letter-spacing:.25em;
+  padding:4px 14px;
+  margin-bottom:10px;
+}
+.result-name {
+  font-family:'Shippori Mincho B1',serif;
+  font-size:clamp(24px,6vw,34px);
+  color:var(--hakuji);
+  font-weight:800;
+  letter-spacing:.2em;
+  line-height:1.3;
+  text-shadow:0 2px 16px rgba(0,0,0,.4);
+}
+.result-yomi {
+  font-size:11px;
+  color:rgba(249,244,237,.65);
+  letter-spacing:.18em;
+  margin-top:6px;
+}
+.result-subtitle-tag {
+  display:inline-block;
+  margin-top:10px;
+  background:var(--shu);
+  color:var(--hakuji);
+  font-size:11px;
+  letter-spacing:.18em;
+  padding:5px 18px;
+}
+
+/* セクションカード */
+.r-card {
+  background:var(--hakuji);
+  border:1.5px solid var(--ai);
+  padding:22px 20px;
+  margin-bottom:12px;
+  position:relative;
+}
+.r-card::before {
+  content:'';
+  position:absolute;
+  top:3px;left:3px;right:3px;bottom:3px;
+  border:1px solid rgba(200,144,16,.3);
+  pointer-events:none;
+}
+
+/* セクションラベル（色によって武将カラー変化） */
+.r-label {
+  font-size:9px;
+  letter-spacing:.28em;
+  font-weight:700;
+  border-bottom:2px solid currentColor;
+  padding-bottom:5px;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.r-label.ai    { color:var(--ai); border-color:var(--ai); }
+.r-label.shu   { color:var(--shu); border-color:var(--shu); }
+.r-label.midori{ color:var(--midori); border-color:var(--midori); }
+.r-label.kin   { color:var(--kin); border-color:var(--kin); }
+.r-label.beni  { color:var(--beni); border-color:var(--beni); }
+.r-label.fuji  { color:var(--fuji); border-color:var(--fuji); }
+.r-label.sumi  { color:var(--sumi); border-color:var(--sumi); }
+.r-label.sagamidori { color:#1a6b5a; border-color:#1a6b5a; }
+.r-label.seiji      { color:#4a7a6a; border-color:#4a7a6a; }
+
+.r-desc {
+  font-size:13.5px;
+  color:var(--sumi);
+  line-height:2.05;
+  text-align:justify;
+}
+
+/* 特性タグ（色鍋島3色） */
+.traits { display:flex; flex-wrap:wrap; gap:7px; }
+.ttag {
+  font-size:11.5px;
+  padding:5px 13px;
+  letter-spacing:.05em;
+  border:1.5px solid;
+}
+.ttag.c0 { color:var(--shu);   border-color:var(--shu);   background:rgba(200,54,26,.07); }
+.ttag.c1 { color:var(--midori);border-color:var(--midori);background:rgba(61,122,53,.07); }
+.ttag.c2 { color:var(--yamabuki);border-color:var(--yamabuki);background:rgba(200,144,16,.07); }
+.ttag.c3 { color:var(--ai);    border-color:var(--ai);    background:rgba(26,58,92,.07); }
+.ttag.c4 { color:var(--kin);   border-color:var(--kin);   background:rgba(196,134,26,.07); }
+
+/* 能力バー */
+.ability-bars { display:flex; flex-direction:column; gap:11px; }
+.ab-row {}
+.ab-meta {
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--sumi);
+  margin-bottom:4px;
+}
+.ab-score { font-weight:700; }
+.ab-track {
+  height:7px;
+  background:rgba(26,58,92,.1);
+  position:relative;
+  overflow:hidden;
+}
+.ab-fill {
+  height:100%;
+  transform-origin:left;
+  transform:scaleX(0);
+  transition:transform .85s cubic-bezier(.4,0,.2,1);
+}
+/* 各能力バー色 */
+.ab-fill.c0 { background:linear-gradient(to right,var(--shu),var(--shu-light)); }
+.ab-fill.c1 { background:linear-gradient(to right,var(--midori),var(--midori-light)); }
+.ab-fill.c2 { background:linear-gradient(to right,var(--yamabuki),var(--kin-light)); }
+.ab-fill.c3 { background:linear-gradient(to right,var(--ai),var(--ai-light)); }
+.ab-fill.c4 { background:linear-gradient(to right,var(--kin),var(--kin-light)); }
+.ab-fill.c5 { background:linear-gradient(to right,var(--shu),var(--midori)); }
+
+/* 佐賀ゆかり */
+.saga-box {
+  background:rgba(26,58,92,.06);
+  border-left:4px solid var(--ai);
+  padding:13px 15px;
+  margin-top:2px;
+}
+.saga-label {
+  font-size:9px;
+  letter-spacing:.2em;
+  color:var(--ai-light);
+  margin-bottom:5px;
+}
+.saga-text {
+  font-size:13px;
+  color:var(--sumi);
+  line-height:1.85;
+}
+
+
+.share-wrap{margin-top:14px;display:flex;flex-direction:column;gap:9px;}
+.share-label{font-size:10px;letter-spacing:.2em;color:var(--ai);text-align:center;opacity:.7;}
+.share-btns{display:flex;gap:8px;}
+.btn-share{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:13px 6px;border:none;border-radius:2px;
+  font-family:'Noto Serif JP',serif;font-size:11px;font-weight:700;
+  letter-spacing:.04em;cursor:pointer;text-decoration:none;transition:all .22s;
+}
+.btn-share-x{background:#000;color:#fff;}
+.btn-share-x:hover{background:#222;transform:translateY(-2px);}
+.btn-share-fb{background:#1877f2;color:#fff;}
+.btn-share-fb:hover{background:#0d65d9;transform:translateY(-2px);}
+.btn-share-save{background:var(--kin);color:#fff;}
+.btn-share-save:hover{background:var(--kin-light);transform:translateY(-2px);}
+
+.btn-retry {
+  display:block;
+  width:100%;
+  background:transparent;
+  border:1.5px solid var(--ai);
+  color:var(--ai);
+  font-family:'Shippori Mincho B1',serif;
+  font-size:13px;
+  letter-spacing:.2em;
+  padding:14px;
+  cursor:pointer;
+  margin-top:14px;
+  transition:all .25s;
+}
+.btn-retry:hover {
+  background:var(--ai);
+  color:var(--hakuji);
+}
+
+/* ── アニメーション ── */
+@keyframes fadeUp {
+  from{opacity:0;transform:translateY(18px);}
+  to  {opacity:1;transform:translateY(0);}
+}
+@keyframes float {
+  0%,100%{transform:translateY(0);}
+  50%    {transform:translateY(-7px);}
+}
+@keyframes shimmer {
+  0%  {left:-100%;}
+  100%{left:200%;}
+}
+.fu  { animation:fadeUp .5s ease both; }
+.d1  { animation-delay:.07s; }
+.d2  { animation-delay:.14s; }
+.d3  { animation-delay:.21s; }
+.d4  { animation-delay:.28s; }
+.d5  { animation-delay:.35s; }
+
+@media(max-width:480px){
+  .iro-card{padding:20px 16px;}
+  .card-stripe{margin:-20px -16px 18px;}
+  .r-card{padding:18px 14px;}
+  .warrior-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ══════════════════════════════════
+   i18n
+══════════════════════════════════ */
+const T={
+  ja:{
+    org:'佐賀戦国研究会',
+    title:'佐賀の戦国武将\nタイプ診断',
+    sub:'Hizen Sengoku Warrior Type Test',
+    lead:'戦国時代の佐賀（肥前国）を舞台に活躍した武将たちは、それぞれ異なる個性と才覚を持っていた。彼らは日本に名高い「葉隠」の精神を形作った人々である。\n\n8つの問いに答えることで、あなたの思考・行動パターンに最も近い武将が明らかになる。',
+    types_title:'判定できる武将（全16タイプ）',
+    start:'── 診断を始める ──',
+    qpre:'第',qsuf:'問',tpre:'全',tsuf:'問',
+    next:'次の問いへ',judge:'判定する',
+    result_lbl:'判定結果',
+    s_profile:'◆ 武将の人物像',
+    s_traits:'◆ あなたの特性',
+    s_ability:'◆ 能力値',
+    s_saga:'◆ 佐賀ゆかりの地',
+    retry:'もう一度診断する',
+    share_label:'── 結果をシェアする ──',
+    share_x:'X でシェア',
+    share_fb:'FB でシェア',
+    share_save:'画像を保存',
+    ab:['決断力','知略','内政力','統率力','外交力','忠義心'],
+  },
+  en:{
+    org:'Saga Sengoku Research Society',
+    title:'Saga Sengoku\nWarrior Type Test',
+    sub:'戦国肥前 Personality Diagnosis',
+    lead:'The warriors who shaped Hizen Province (present-day Saga) during the Sengoku period each possessed unique qualities and talents. They were the very people who forged the spirit of Hagakure — one of Japan\'s most celebrated works of samurai philosophy.\n\nAnswer 8 questions to discover which warrior your personality most resembles.',
+    types_title:'Available Types (16 Warriors)',
+    start:'── Begin the Test ──',
+    qpre:'Q',qsuf:'',tpre:'/ ',tsuf:'',
+    next:'Next Question',judge:'Get Result',
+    result_lbl:'Your Warrior Type',
+    s_profile:'◆ Warrior Profile',
+    s_traits:'◆ Your Traits',
+    s_ability:'◆ Ability Scores',
+    s_saga:'◆ Saga Connection',
+    retry:'Take the Test Again',
+    share_label:'── Share your result ──',
+    share_x:'Share on X',
+    share_fb:'Share on FB',
+    ab:['Decisiveness','Strategy','Administration','Leadership','Diplomacy','Loyalty'],
+  },
+  zh:{
+    org:'佐賀戰國研究會',
+    title:'佐賀戰國武將\n類型診斷',
+    sub:'Hizen Sengoku Warrior Type Test',
+    lead:'在戰國時代的佐賀（肥前國）叱吒風雲的武將們，各自擁有不同的個性與才能。他們正是孕育出日本名著《葉隱》精神的那群人。\n\n回答8個問題，找出與您的思維和行動模式最相近的武將。',
+    types_title:'可判定的武將（共16種類型）',
+    start:'── 開始診斷 ──',
+    qpre:'第',qsuf:'題',tpre:'共',tsuf:'題',
+    next:'下一題',judge:'查看結果',
+    result_lbl:'診斷結果',
+    s_profile:'◆ 武將介紹',
+    s_traits:'◆ 您的特質',
+    s_ability:'◆ 能力值',
+    s_saga:'◆ 佐賀相關之地',
+    retry:'再次診斷',
+    share_label:'── 分享您的結果 ──',
+    share_x:'分享至 X',
+    share_fb:'分享至 FB',
+    ab:['決斷力','謀略','內政力','統率力','外交力','忠義心'],
+  },
+};
+
+/* ══════════════════════════════════
+   武将データ
+══════════════════════════════════ */
+const W={
+  takanobu:{
+    emoji:'⚔️',
+    accentCls:'shu',
+    ja:{name:'龍造寺隆信',yomi:'りゅうぞうじ たかのぶ',period:'1529-1584',sub:'革命的カリスマ型',
+      desc:'7歳で出家し学問に秀でた後、17歳で武士に戻り龍造寺家を再建。肥前を起点に九州の三分の一を傘下に収めた「五州太守」。豪快にして合理的、ダジャレも好むユーモアの持ち主。裏切りには容赦しないが、忠勤した部下には手厚い。チャンスを逃さず掴む実力主義の覇者。沖田畷の戦いに自ら出陣し、戦場で壮絶な最期を遂げた。',
+      traits:['実力主義','合理的謀略','豪快なカリスマ','機会を逃さない','義理・恩賞に厚い'],
+      ab:[92,75,68,95,70,80],
+      saga:'佐賀城（龍造寺城）／沖田畷古戦場（島原市）\n龍造寺家の本拠地として栄えた水ヶ江・龍造寺城跡は現在の佐賀城公園周辺に位置する。',
+    },
+    en:{name:'Ryūzōji Takanobu',yomi:'龍造寺隆信 (1529–1584)',period:'1529-1584',sub:'Charismatic Conqueror Type',
+      desc:'A self-made warlord who rebuilt his clan from near-extinction and forged a domain spanning a third of Kyushu. Brilliant, strategic, and surprisingly witty. Ruthless to betrayers but generous to loyal retainers. He died in battle at Okitanawate in 1584.',
+      traits:['Meritocratic','Strategic mind','Bold charisma','Seizes opportunity','Rewards loyalty'],
+      ab:[92,75,68,95,70,80],
+      saga:'Saga Castle ruins (former Ryūzōji Castle) / Okitanawate battlefield (Shimabara)',
+    },
+    zh:{name:'龍造寺隆信',yomi:'りゅうぞうじ たかのぶ (1529-1584)',period:'1529-1584',sub:'革命型魅力領袖',
+      desc:'7歲出家、17歲重返武士之道重建龍造寺家，以肥前為根基征服九州三分之一領土，稱「五州太守」。豪爽且理性，對叛徒毫不留情，對忠誠部下慷慨賞賜。在沖田畷之戰中親自出陣，壯烈戰死。',
+      traits:['實力主義','合理謀略','豪邁魅力','善抓機會','賞罰分明'],
+      ab:[92,75,68,95,70,80],
+      saga:'佐賀城（龍造寺城）遺址 / 沖田畷古戰場（島原市）',
+    },
+  },
+  naganobu:{
+    emoji:'🛡️',
+    accentCls:'midori',
+    ja:{name:'龍造寺長信',yomi:'りゅうぞうじ ながのぶ',period:'1538-1613',sub:'献身的補佐役型',
+      desc:'龍造寺隆信の信頼する弟にして、最強の補佐役。温厚・家臣思いで慕われながら、多久梶峰城主として兵站・内政・経済を支えた。材木・火薬の調達から城普請の指揮まで、兄の勢力拡大を縁の下で支えた。梶峰城は長信が城主となって以降、一度も落城しなかった。',
+      traits:['忠義','縁の下の力持ち','内政の天才','温厚・家臣思い','補給・兵站の要'],
+      ab:[65,72,92,78,68,98],
+      saga:'多久梶峰城跡（佐賀県多久市）\n多久市郷土資料館には長信の肖像画が蔵されている。',
+    },
+    en:{name:'Ryūzōji Naganobu',yomi:'龍造寺長信 (1538–1613)',period:'1538-1613',sub:'Devoted Supporter Type',
+      desc:'Younger brother of Takanobu and his most trusted lieutenant. A master of logistics and economic management from Kajimine Castle. He secured timber, gunpowder, roads, and fortifications — the invisible backbone of Ryūzōji expansion. Kajimine Castle never fell under his command.',
+      traits:['Devoted loyalty','Unsung hero','Administrative genius','Beloved by retainers','Logistics master'],
+      ab:[65,72,92,78,68,98],
+      saga:'Kajimine Castle ruins, Taku City / Taku Municipal Museum (holds his portrait)',
+    },
+    zh:{name:'龍造寺長信',yomi:'りゅうぞうじ ながのぶ (1538-1613)',period:'1538-1613',sub:'忠誠奉獻型輔佐者',
+      desc:'龍造寺隆信最信任的弟弟，擔任多久梶峰城主，默默支撐兵站、內政與經濟。從木材、火藥調度到城池修建指揮，梶峰城在其任內從未失守。',
+      traits:['忠義','幕後功臣','內政天才','體恤部下','兵站補給要角'],
+      ab:[65,72,92,78,68,98],
+      saga:'多久梶峰城遺址（佐賀縣多久市）\n多久市鄉土資料館藏有長信肖像畫。',
+    },
+  },
+  nobukane:{
+    emoji:'🎴',
+    accentCls:'kin',
+    ja:{name:'龍造寺信周',yomi:'りゅうぞうじ のぶかね',period:'1532-1608',sub:'調整・危機管理型',
+      desc:'バランス感覚とコミュニケーション力に優れた龍造寺一門の重鎮。隆信死後、鍋島直茂が柳川城に籠って動かない事態に、自ら出向き説得して佐賀へ帰参させた危機管理の達人。须古・白石地域の領主として善政を布き、死後は「宗桂さん」と呼ばれる杵島神社の祭神となった。',
+      traits:['バランス感覚','対話・調整力','危機管理','温かい善政','人に慕われる'],
+      ab:[72,68,85,75,90,88],
+      saga:'杵島神社（佐賀県白石町）\n信周は死後、杵島神社の祭神として祀られ「宗桂さん」と親しまれている。',
+    },
+    en:{name:'Ryūzōji Nobukane',yomi:'龍造寺信周 (1532–1608)',period:'1532-1608',sub:'Crisis Manager & Mediator Type',
+      desc:'Master of balance and communication. After Takanobu\'s death, when Nabeshima Naoshige refused to leave Yanagawa Castle, Nobukane personally traveled there to negotiate — and succeeded, preventing the clan\'s collapse. He governed Suko and Shiroishi with such virtue that he was later enshrined as a local deity.',
+      traits:['Balanced judgment','Mediator','Crisis management','Benevolent governance','Beloved leader'],
+      ab:[72,68,85,75,90,88],
+      saga:'Kishima Shrine, Shiroishi Town — enshrined as "Sōkei-san," a beloved local deity.',
+    },
+    zh:{name:'龍造寺信周',yomi:'りゅうぞうじ のぶかね (1532-1608)',period:'1532-1608',sub:'調和型危機管理者',
+      desc:'平衡感與溝通能力超強的重臣。隆信死後親赴柳川說服鍋島直茂歸返，防止龍造寺家崩潰。以仁政治理須古・白石地區，死後被奉為杵島神社祭神「宗桂さん」。',
+      traits:['平衡感強','善於調解','危機管理','仁政愛民','深得民心'],
+      ab:[72,68,85,75,90,88],
+      saga:'杵島神社（佐賀縣白石町）\n信周死後被奉為祭神「宗桂さん」，至今廣受當地居民敬仰。',
+    },
+  },
+  ieharu:{
+    emoji:'',
+    accentCls:'beni',
+    ja:{name:'龍造寺家晴',yomi:'りゅうぞうじ いえはる',period:'1555-1613',sub:'柔軟なエース実戦型',
+      desc:'水ヶ江龍造寺の嫡流という高い出自を持ちながら、父の失脚後も柔軟に龍造寺隆信に仕え、軍のエースとして各地を転戦した。蒲池一族の謀殺には距離を置くなど、義理と現実のバランス感覚も持つ。隆信没後は柳川城主として大友勢の侵攻を防ぎ、秀吉への直訴で諫早の地を獲得。晩年は龍造寺一門の長老格として鍋島への権力移譲を容認した。',
+      traits:['柔軟な適応力','実戦のエース','誇りと現実のバランス','自ら動いて道を開く','長老格の重み'],
+      ab:[88,65,70,85,78,82],
+      saga:'長崎県諫早市（諫早氏の祖として諫早を拓く）\n諫早の天祐寺に葬られ、子孫は「諫早氏」として幕末まで続いた。',
+    },
+    en:{name:'Ryūzōji Ieharu',yomi:'龍造寺家晴 (1555–1613)',period:'1555-1613',sub:'Flexible Ace Warrior Type',
+      desc:'Born as the legitimate heir of the Mizugae Ryūzōji line, he adapted pragmatically after his father\'s downfall and served Takanobu as the army\'s top field commander. He maintained moral distance from Takanobu\'s darker acts while still delivering victories across Kyushu. After Takanobu\'s death, he personally petitioned Toyotomi Hideyoshi at Shimonoseki, won the Isahaya domain, and spent his final years as the senior Ryūzōji elder endorsing the clan\'s transition to Nabeshima rule.',
+      traits:['Flexible adapter','Ace warrior','Balances pride and pragmatism','Carves his own path','Elder statesman weight'],
+      ab:[88,65,70,85,78,82],
+      saga:'Isahaya City, Nagasaki — founder of the Isahaya clan. Buried at Ten\'yūji Temple.',
+    },
+    zh:{name:'龍造寺家晴',yomi:'りゅうぞうじ いえはる (1555-1613)',period:'1555-1613',sub:'靈活實戰型王牌武將',
+      desc:'身為水ヶ江龍造寺嫡流，父親失勢後仍靈活地效忠龍造寺隆信，作為軍隊王牌轉戰各地。對蒲池一族的謀殺保持距離，展現義理與現實的平衡感。隆信死後守護柳川城抵禦大友勢，親赴下關向秀吉陳情獲得諫早領地。晚年以龍造寺一門長老身份容認向鍋島的權力移交。',
+      traits:['靈活適應力','實戰王牌','義理與現實的平衡','自力開拓道路','長老的份量'],
+      ab:[88,65,70,85,78,82],
+      saga:'長崎縣諫早市（開拓諫早之地，諫早氏始祖）\n葬於諫早天祐寺，子孫以「諫早氏」之名延續至幕末。',
+    },
+  },
+  nobukage:{
+    emoji:'',
+    accentCls:'fuji',
+    ja:{name:'納富信景',yomi:'のうとみ のぶかげ',period:'?-1588',sub:'堅実名将・アンサングヒーロー型',
+      desc:'今山の戦いで鍋島直茂の奇襲を陽動で支え、須古城征伐では単独指揮で大軍功を挙げ、川上合戦など重要な戦いで常に活躍した知勇兼備の宿老。しかし「諸記に之を載せず」と史料に嘆かれるほど記録に残りにくく、功績は鍋島直茂の陰に隠れた。外交にも携わり、後藤貴明の内紛鎮定にも関与。まさに龍造寺鍋島史における唯一無二のアンサングヒーロー。',
+      traits:['知勇兼備','堅実・そつなし','どんな局面も安定','記録されない功績','主君の絶対的信頼'],
+      ab:[82,80,72,88,75,95],
+      saga:'佐賀県内各地（今山・須古城・川上など）\n記録は少ないが、龍造寺隆信の信頼を最も受けた宿老の一人。',
+    },
+    en:{name:'Nōtomi Nobukage',yomi:'納富信景 (?–1588)',period:'?-1588',sub:'Unsung Hero & Steady Commander Type',
+      desc:'A commander of rare combined intellect and valor who provided the crucial diversionary attack enabling Nabeshima Naoshige\'s famous night raid at the Battle of Imayama. He led an independent unit to great success at the Suko Castle siege and served with distinction in multiple key engagements. Yet historical records barely mention him — one source laments "his merits in this campaign were immense, yet no chronicle records them." A true unsung hero of Ryūzōji-Nabeshima history.',
+      traits:['Combined valor & intellect','Steady & reliable','Unshakeable in any situation','Unrecorded achievements','Absolute trust of his lord'],
+      ab:[82,80,72,88,75,95],
+      saga:'Multiple sites in Saga (Imayama, Suko Castle, Kawakami) — a hero whose footprints remain across the region.',
+    },
+    zh:{name:'納富信景',yomi:'のうとみ のぶかげ (?-1588)',period:'?-1588',sub:'沉穩名將・無名英雄型',
+      desc:'在今山之戰中以陽動支援鍋島直茂的奇襲，在須古城征伐中獨立指揮立下大功，並在川上合戰等重要戰役中持續活躍的知勇兼備宿老。然而史料中卻記載「諸記に之を載せず（各記錄皆未載此功）」，功績隱沒在鍋島直茂的光環之下。外交方面亦有參與，堪稱龍造寺鍋島史中獨一無二的無名英雄。',
+      traits:['知勇兼備','沉穩可靠','任何局面皆穩定','不被記錄的功績','主君的絕對信任'],
+      ab:[82,80,72,88,75,95],
+      saga:'佐賀縣各地（今山・須古城・川上等）\n記錄雖少，卻是龍造寺隆信最信賴的宿老之一。',
+    },
+  },
+  naritomi:{
+    emoji:'',
+    accentCls:'midori',
+    ja:{name:'成富茂安',yomi:'なりどみ しげやす',period:'1560-1634',sub:'変革と多才・治水の猛将型',
+      desc:'若き日は博打に明け暮れた傾奇者だったが18歳頃に更生、戦場では短期間に十度の手柄を立て龍造寺隆信から「十右衛門」の渾名を授かった。天草合戦では加藤清正の援軍として500騎を率い、以来清正と入魂の仲に。機転と弁舌から小早川隆景・黒田如水とも交流し外交でも重用された。関ヶ原では伏見城の大手門を焼き崩して一番乗りの武勇を示す。江戸時代には治水工事で類稀な手腕を発揮し「治水の神様」と称されるが、歴戦の猛将であった史実は地元でも余り知られていない。',
+      traits:['劇的な自己変革','猛将にして外交家','機転と弁舌','多彩な才能','治水の神様'],
+      ab:[85,78,90,88,82,80],
+      saga:'現・大阪市中央区龍造寺町（豊臣大坂城普請で成富が小屋を構えた地に由来）\n佐賀県内各地の治水施設。「石井樋」や「馬ン頭」など成富が手掛けた治水施設が今も現役で使われている。',
+    },
+    en:{name:'Naritomi Shigeyasu',yomi:'成富茂安 (1560–1634)',period:'1560-1634',sub:'Self-Made Versatile Commander Type',
+      desc:'A reformed renegade who spent his youth gambling before turning his life around at 18. On the battlefield he racked up ten distinctions so quickly that Ryūzōji Takanobu nicknamed him "Jūemon." He led 500 cavalry to aid Katō Kiyomasa at Amakusa and became his close confidant. His quick wit and eloquence made him a trusted diplomat alongside Kobayakawa Takakage and Kuroda Josui. At the Battle of Sekigahara he stormed Fushimi Castle, burning down the main gate and leading the first charge. In peacetime, he became a legendary engineer of flood-control works — though few in Saga today realize he was also a seasoned warrior.',
+      traits:['Dramatic self-reinvention','Warrior and diplomat','Quick wit & eloquence','Multifaceted talent','God of flood control'],
+      ab:[85,78,90,88,82,80],
+      saga:'Ryūzōjichō, Chūō Ward, Osaka (named after the hut Naritomi built during Toyotomi castle works)\nIrrigation channels across Saga Prefecture — Naritomi\'s water control works including Ishiibi and Mantou are still in active use today.',
+    },
+    zh:{name:'成富茂安',yomi:'なりどみ しげやす (1560-1634)',period:'1560-1634',sub:'自我蛻變的多才猛將型',
+      desc:'年輕時沉溺賭博，18歲幡然醒悟，此後在戰場上短期間內立下十次功勳，獲龍造寺隆信賜號「十右衛門」。天草合戰中率500騎援助加藤清正，兩人結為密友。憑藉機敏與口才，與小早川隆景、黑田如水交流，在外交上也被重用。關原之戰中燒毀伏見城大手門並率先突入，展現猛將本色。江戶時代發揮卓越治水才能，被尊為「治水之神」，但其歷戰猛將的史實在當地鮮為人知。',
+      traits:['戲劇性的自我蛻變','猛將兼外交家','機智與口才','多才多藝','治水之神'],
+      ab:[85,78,90,88,82,80],
+      saga:'大阪市中央區龍造寺町（豐臣大阪城普請時成富設小屋之地，地名由此而來）\n佐賀縣各地治水設施。「兵庫的水渠」等成富修建的治水設施「石井樋」與「馬ン頭」等至今仍在使用。',
+    },
+  },
+  naoshige:{
+    emoji:'',
+    accentCls:'ai',
+    ja:{name:'鍋島直茂',yomi:'なべしま なおしげ',period:'1538-1618',sub:'大局観と誠実・佐賀藩祖型',
+      desc:'佐賀藩の祖。普段は子供も懐く気さくな人柄でありながら、戦評定となると顔を真っ赤にして熱く持論を語った。元亀元（1570）年の今山の戦いでは、決死の覚悟で大友本陣への払暁奇襲を成し遂げ、奇跡的な勝利の立役者となる。敵味方に対し誠実な態度で人望を集め、大局観を持ち冷静に状況を判断。豊臣・徳川の政局を読み抜いて龍造寺家を守り続けた。その長い苦労の末に佐賀鍋島藩が成立。「葉隠」の精神を体現した一人。',
+      traits:['大局観と冷静な判断','誠実さと人望','決死の胆力','信念の強さ','御家を守り抜く忍耐'],
+      ab:[88,90,85,92,88,92],
+      saga:'高伝寺（佐賀市）　直茂の墓所。\n佐賀城公園（佐賀市）　直茂が整備した佐賀城の礎が現在の城公園に続く。今山（佐賀市大和町）　今山の戦いの決戦地。',
+    },
+    en:{name:'Nabeshima Naoshige',yomi:'鍋島直茂 (1538–1618)',period:'1538-1618',sub:'Grand Strategist & Founder of Saga Domain Type',
+      desc:'Founder of the Saga Domain and one of the people who shaped the spirit of Hagakure. Warm and approachable in daily life — even children adored him — yet in war councils he flushed red and argued his convictions with fierce passion. His pre-dawn raid on the Ōtomo headquarters at the Battle of Imayama (1570) turned near-certain defeat into a miraculous victory. Dealing with friends and enemies alike with sincerity, he earned extraordinary trust on all sides. Navigating Toyotomi and Tokugawa politics with cool strategic vision, he protected the Ryūzōji domain until the Saga Nabeshima Domain was finally established.',
+      traits:['Grand strategic vision','Sincerity and personal trust','Courageous conviction','Unshakeable belief','Patient guardian of the clan'],
+      ab:[88,90,85,92,88,92],
+      saga:'Kōdenji Temple, Saga City — Naoshige\'s burial site.\nSaga Castle Park — the castle Naoshige developed. Imayama, Yamato-cho — site of his legendary dawn raid.',
+    },
+    zh:{name:'鍋島直茂',yomi:'なべしま なおしげ (1538-1618)',period:'1538-1618',sub:'大局觀與誠實·佐賀藩祖型',
+      desc:'佐賀藩始祖。平日親切隨和，連孩子都喜歡親近他，但在軍事評議上則漲紅著臉熱切地陳述己見。元龜元年（1570）今山之戰中，抱定必死之心對大友本陣發動黎明奇襲，成為奇蹟般勝利的功臣。以誠實的態度對待敵我雙方，廣獲人望。具備大局觀，不做無謂的賭注，冷靜判斷局勢，洞悉豐臣・德川的政治走向，守護龍造寺家。歷盡艱辛後，佐賀鍋島藩正式成立。',
+      traits:['大局觀與冷靜判斷','誠實與人望','必死的膽識','堅定的信念','守護御家的忍耐'],
+      ab:[88,90,85,92,88,92],
+      saga:'高傳寺（佐賀市）　直茂墓所。\n佐賀城公園（佐賀市）　直茂整備的佐賀城基礎延續至今。今山（佐賀市大和町）　今山之戰決戰地。',
+    },
+  },
+  hirai:{
+    emoji:'',
+    accentCls:'seiji',
+    ja:{name:'平井経治',yomi:'ひらい つねはる',period:'?-1579頃',sub:'防御型の勇将・地の利の名手型',
+      desc:'須古城主。少弐氏の分家で、有馬氏と縁を結び西肥前の同盟に加わった。龍造寺隆信の全盛期においても、須古の地勢を熟知した防御戦術と巧みな伏兵で隆信の大軍を何度も撃退した「無双の勇将」。注目すべきは、みずから積極的に外部へ侵攻することなく、主に「防戦」で名を上げた点。有馬・大村と連携しながら西肥前の独自性を守り続けた。最終的に龍造寺氏に屈するが、その後も隆信が自ら須古へ移住するほど、この地は重視された。',
+      traits:['防御の名手','地の利を活かす','伏兵戦術','冷静な状況判断','動かずして勝つ'],
+      ab:[70,85,78,88,72,85],
+      saga:'須古城跡（佐賀県白石町）\n平井氏が拠点とした須古城跡。龍造寺隆信が陥落後みずから移住したほど重要な要害の地。',
+    },
+    en:{name:'Hirai Tsuneharu',yomi:'平井経治 (?-c.1579)',period:'?-c.1579',sub:'Defensive Genius & Master of Terrain Type',
+      desc:'Lord of Suko Castle and a scion of the Shoni clan who allied with the Arima clan. Even at the height of Ryuzoji Takanobu power, he repelled the massive armies of Takanobu again and again through deep knowledge of the local terrain and masterful ambush tactics, earning the title "peerless brave general." Remarkably, he built his entire reputation on defense, never launching aggressive campaigns of his own. After the castle finally fell, Takanobu himself chose to reside at Suko, a testament to the strategic importance of the domain Hirai had defended so brilliantly.',
+      traits:['Master of defense','Terrain expertise','Ambush tactics','Cool situational judgment','Win without moving'],
+      ab:[70,85,78,88,72,85],
+      saga:'Suko Castle ruins, Shiroishi Town, Saga. The fortress Hirai defended so tenaciously that Ryuzoji Takanobu chose to live there after its fall.',
+    },
+    zh:{name:'平井經治',yomi:'ひらい つねはる (?-1579頃)',period:'?-c.1579',sub:'防禦型勇將・地利名手型',
+      desc:'須古城主，少弐氏分家，與有馬氏締結姻親，加入西肥前同盟。即使在龍造寺隆信全盛期，也憑藉對須古地形的深刻了解與精妙的伏兵戰術，多次擊退隆信的大軍，被稱為「無雙勇將」。值得注意的是，他從不主動對外侵攻，以「防戰」建立名聲。最終雖敗於龍造寺氏，但隆信之後親自移居須古，足見此地的重要性。',
+      traits:['防禦名手','善用地利','伏兵戰術','冷靜判斷','不動而勝'],
+      ab:[70,85,78,88,72,85],
+      saga:'須古城遺址（佐賀縣白石町）\n平井氏的據點。龍造寺隆信攻陷後親自移居於此，足見其戰略重要性。',
+    },
+  },
+  chiba:{
+    emoji:'',
+    accentCls:'kin',
+    ja:{name:'千葉興常',yomi:'ちば おきつね',period:'?-1540',sub:'名門の権威・屋形型',
+      desc:'肥前千葉氏14代当主。東千葉氏初代。元寇防衛のため下総から下向した名門の嫡流。大内義興の代官として本貫地小城郡へ帰り咲き、龍造寺氏・後藤氏など傘下の国人に知行安堵し佐賀郡・杵島郡・松浦郡まで影響を及ぼした「屋形様」。千葉氏伝来の宝物を所持し、発給文書数も歴代最多。権威と実力を兼ね備えた守護代クラスの存在として東肥前に隠然たる権勢を誇った。',
+      traits:['名門の権威','広域支配','知行安堵の器量','隠然たる実力','屋形様の風格'],
+      ab:[75,80,90,85,78,82],
+      saga:'牛頭城跡（佐賀県小城市）\n肥前千葉氏の本貫地小城。千葉氏ゆかりの日蓮宗寺院が現在も多く残る。',
+    },
+    en:{name:'Chiba Okitsune',yomi:'千葉興常 (?–1540)',period:'?-1540',sub:'Noble Authority & Lord of the Manor Type',
+      desc:'14th head of the Hizen Chiba clan — descendants of the prestigious Chiba family who came to Kyushu to defend against the Mongol invasions. Returning to Ogi County as deputy for Ouchi Yoshioki, he confirmed land rights for vassals including the Ryuzoji and Goto clans and exercised influence across multiple provinces. Holding the clan treasures and leaving more documents than any previous head, recent research has revealed the quiet but enormous authority of this "Lord of the Manor."',
+      traits:['Noble prestige','Wide domain control','Magnanimous governance','Quiet authority','Lord of the Manor dignity'],
+      ab:[75,80,90,85,78,82],
+      saga:'Goto Castle ruins, Ogi City, Saga. The Hizen Chiba homeland of Ogi still has many Nichiren Buddhist temples connected to the clan.',
+    },
+    zh:{name:'千葉興常',yomi:'ちば おきつね (?-1540)',period:'?-1540',sub:'名門權威・屋形型',
+      desc:'肥前千葉氏第14代當主，東千葉氏初代。為防禦元寇而從下總下向九州的名門嫡流。作為大內義興的代官返回本貫地小城郡，向龍造寺氏、後藤氏等傘下國人確認知行，影響力遍及佐賀郡、杵島郡、松浦郡。持有千葉氏傳家寶物，發給文書數量為歷代最多。以守護代級別的存在在東肥前維持著隱然的權勢。',
+      traits:['名門權威','廣域支配','知行安堵的器量','隱然實力','屋形樣的風格'],
+      ab:[75,80,90,85,78,82],
+      saga:'牛頭城遺址（佐賀縣小城市）\n肥前千葉氏本貫地小城。與千葉氏相關的日蓮宗寺院至今仍多有保存。',
+    },
+  },
+  chikushi:{
+    emoji:'',
+    accentCls:'fuji',
+    ja:{name:'筑紫広門',yomi:'ちくし ひろかど',period:'1556-1623',sub:'臨機応変の境目武将型',
+      desc:'勝尾城主。鳥栖地方を根拠とした国衆で、筑前・筑後・肥前の境目という宿命から、大友・龍造寺・島津・豊臣・徳川と上位権力の盛衰を冷静に見極め、巧みな政治的綱渡りを続けた。島津の大軍に敗れても勝尾城を奪還、素早く秀吉に服属。関ヶ原で奉行方についたため最終的に改易されたが、その生き様は「九州の真田昌幸」として近年注目を集めている。',
+      traits:['状況読みの天才','政治的綱渡り','柔軟な生存術','境目の知恵','九州の真田昌幸'],
+      ab:[72,88,80,78,92,75],
+      saga:'勝尾城跡（佐賀県鳥栖市）\n筑前・筑後・肥前の境目に位置する要害。筑紫氏の居城跡が鳥栖市郊外に残る。',
+    },
+    en:{name:'Chikushi Hirokado',yomi:'筑紫広門 (1556–1623)',period:'1556-1623',sub:'Adaptable Borderland Warrior Type',
+      desc:'Lord of Katsuo Castle in Tosu — a domain at the crossroads of three provinces. Fated to navigate between the Otomo, Ryuzoji, Shimazu, Toyotomi, and Tokugawa, he read each power shift with cool precision and walked political tightropes with skill. Even after falling to a Shimazu army of 20,000, he recaptured his castle and swiftly submitted to Toyotomi Hideyoshi. Though ultimately dispossessed after Sekigahara, his life story has earned him recent fame as "the Sanada Masayuki of Kyushu."',
+      traits:['Master situation reader','Political tightrope walker','Flexible survivor','Borderland wisdom','Kyushu Sanada Masayuki'],
+      ab:[72,88,80,78,92,75],
+      saga:'Katsuo Castle ruins, Tosu City, Saga. A strategic fortress at the junction of three provinces, now partially preserved on the outskirts of Tosu.',
+    },
+    zh:{name:'筑紫廣門',yomi:'ちくし ひろかど (1556-1623)',period:'1556-1623',sub:'臨機應變的境界武將型',
+      desc:'勝尾城主。以鳥栖地方為根據地的國衆，因位於筑前、筑後、肥前三國交界而命中注定要在大友、龍造寺、島津、豐臣、德川等強權之間求存。冷靜判斷各方盛衰，巧妙地在政治鋼索上行走。即使敗於島津大軍，仍奪回勝尾城，迅速臣服秀吉。雖因關原之戰站錯邊而最終遭改易，其生涯近年被譽為「九州的真田昌幸」而備受關注。',
+      traits:['局勢判讀高手','政治鋼索行者','靈活的生存術','境界的智慧','九州的真田昌幸'],
+      ab:[72,88,80,78,92,75],
+      saga:'勝尾城遺址（佐賀縣鳥栖市）\n位於三國交界的要害。筑紫氏居城遺址保存於鳥栖市郊外。',
+    },
+  },
+  baba:{
+    emoji:'',
+    accentCls:'shu',
+    ja:{name:'馬場頼周',yomi:'ばば よりちか',period:'?-1545',sub:'評価の分かれる忠義の謀略家型',
+      desc:'綾部城主。少弐氏庶家。博学にして才智あり、忠心深く下賤を憐れんだと評される一方、斜陽の少弐家を守るため義父・筑紫満門を誘殺し、龍造寺家兼一族を偽報で各個撃破するなど、容赦のない謀略を実行した。その行動は主君への忠義から来るものとして評価される面もあるが、結果として龍造寺家兼の意趣返しを招き自滅。龍造寺氏の躍進に間接的に道を拓いた、評価の分かれる悲劇の謀略家。',
+      traits:['主君への忠義','容赦のない謀略','博学・才智','悲劇的な自滅','評価の分かれる存在'],
+      ab:[65,92,70,75,80,95],
+      saga:'綾部城跡（佐賀県三養基郡みやき町原古賀）\n馬場氏の居城跡。龍造寺氏との抗争の舞台となった地。',
+    },
+    en:{name:'Baba Yorichika',yomi:'馬場頼周 (?–1545)',period:'?-1545',sub:'Controversial Loyal Strategist Type',
+      desc:'Lord of Ayabe Castle and a Shoni retainer praised as "learned, talented, deeply loyal, and compassionate toward the humble." Yet to protect the failing Shoni clan, he lured his own father-in-law to his death and destroyed the Ryuzoji Iekane faction through disinformation — cold and ruthless. His actions are seen by some as pure loyalty to his lord. But the result was his own downfall at Ryuzoji hands, and his moves ironically cleared the path for Ryuzoji dominance. A tragic, controversial schemer whose legacy remains debated.',
+      traits:['Devotion to his lord','Ruthless strategist','Learned and talented','Tragic self-destruction','Deeply controversial legacy'],
+      ab:[65,92,70,75,80,95],
+      saga:'Ayabe Castle ruins, Harakoga, Miyaki-cho, Miyaki-gun, Saga. Site of the conflicts between the Baba and Ryuzoji clans.',
+    },
+    zh:{name:'馬場賴周',yomi:'ばば よりちか (?-1545)',period:'?-1545',sub:'評價分歧的忠義謀略家型',
+      desc:'綾部城主，少弐氏庶家。被評為「博學多才、忠心深厚、憐憫下層」，卻為保護衰落的少弐家，將義父筑紫滿門誘殺，並以假情報將龍造寺家兼一族各個擊破，手段毫不留情。其行動雖被視為對主君的忠義，卻引來龍造寺家兼的報復而自滅，間接為龍造寺氏的崛起鋪路。一個評價分歧的悲劇謀略家。',
+      traits:['對主君的忠義','毫不留情的謀略','博學多才','悲劇性自滅','評價分歧的存在'],
+      ab:[65,92,70,75,80,95],
+      saga:'綾部城遺址（佐賀縣三養基郡みやき町原古賀）\n馬場氏居城遺址。龍造寺氏抗爭的舞台。',
+    },
+  },
+  iekane:{
+    emoji:'',
+    accentCls:'beni',
+    ja:{name:'龍造寺家兼',yomi:'りゅうぞうじ いえかね',period:'1454-1546',sub:'不屈の長寿武将・中興の祖型',
+      desc:'水ヶ江龍造寺氏の祖。山城守。91歳にして軍勢を統率した驚異の長寿武将。田手畷の戦い・三津山の戦いで大内軍に奇策で勝利。天文14（1545）年、馬場頼周の謀略で一族の多数が粛清される惨劇を経て筑後へ逃れたが、同年中に再起し仇敵・馬場頼周を討伐。諦めない不屈の精神と、台風・洪水さえも味方につける柔軟な発想で龍造寺家の基盤を作り、孫の隆信へと繋いだ。',
+      traits:['不屈の精神','奇策・機略','長寿の生命力','惨劇からの再起','龍造寺中興の祖'],
+      ab:[82,88,75,85,70,90],
+      saga:'高伝寺（佐賀市）　家兼の墓所。\n水ヶ江城跡（佐賀市）　家兼が拠点とした城。\n万部島（佐賀市水ヶ江一丁目）　家兼が法華経一万部を読誦・納経した地。鍋島歴代藩主による祈禱石碑11基が現存する。',
+    },
+    en:{name:'Ryuzoji Iekane',yomi:'龍造寺家兼 (1454–1546)',period:'1454-1546',sub:'Indomitable Elder & Founder of the Clan Revival Type',
+      desc:'Founder of the Mizugae Ryuzoji line and the man who laid the foundations for the clan rise. He led armies in battle at the age of 91. At the Battle of Tade-nawate and the Battle of Mitsuyama, he defeated the mighty Ouchi forces through creative tactics — once using a typhoon and flood to launch a night river assault. After most of his clan was massacred in 1545 through the schemes of Baba Yorichika, he fled to Chikugo — but rallied the same year, returned, and personally destroyed Baba. His indomitable spirit passed through to his grandson Takanobu.',
+      traits:['Indomitable spirit','Creative tactics','Extraordinary longevity','Comeback from tragedy','Clan reviver'],
+      ab:[82,88,75,85,70,90],
+      saga:'Kodenji Temple, Saga City — Iekane burial site. Mizugae Castle ruins, Saga City — his base of operations. Manbujima, Mizugae, Saga City — where Iekane performed the reading and dedication of ten thousand sutras. Eleven memorial stones erected by successive Nabeshima domain lords still stand here.',
+    },
+    zh:{name:'龍造寺家兼',yomi:'りゅうぞうじ いえかね (1454-1546)',period:'1454-1546',sub:'不屈長壽武將・中興之祖型',
+      desc:'水ヶ江龍造寺氏的始祖，山城守。在91歲高齡仍統率軍隊的驚人長壽武將。在田手畷之戰、三津山之戰中以奇策勝大內軍，甚至利用颱風與洪水夜間溯河奇襲。天文14年（1545年）遭馬場賴周謀略，一族多人被粛清，被迫逃往筑後，但當年即再起，親手討伐仇敵馬場賴周。不屈的精神與靈活的發想為龍造寺家奠定基礎，並傳承給孫子隆信。',
+      traits:['不屈的精神','奇策機略','長壽生命力','從慘劇中再起','龍造寺中興之祖'],
+      ab:[82,88,75,85,70,90],
+      saga:'高傳寺（佐賀市）　家兼墓所。\n水ヶ江城遺址（佐賀市）　家兼的據點。\n萬部島（佐賀市水ヶ江一丁目）　家兼讀誦・納經法華經一萬部之地。現存鍋島歷代藩主所建的祈禱石碑11基。',
+    },
+  },
+  aganbou:{
+    emoji:'',
+    accentCls:'sumi',
+    ja:{name:'阿含坊',yomi:'あごんぼう',period:'?-?',sub:'鉄砲術に優れたボディガード型',
+      desc:'薩摩・伊集院氏の一族。囲碁の諍いで人を殺め国外へ脱出、山伏となり都で鉄炮術を指南した後、肥前山内に流れ着いた。鳩を鉄炮で撃ち落とし近隣を騒がせたところを神代勝利に見いだされ召し抱えられる。身長七尺の巨躯に大髭、容貌魁偉で腕力強く眼光鋭い。金敷峠の戦いでは鉢巻き姿で大木の陰に潜み、龍造寺の老臣・石井兼清を鉄炮で討ち取る大功を挙げた。平時は勝利の身辺警護として片時も離れず、「今弁慶」と賞された。',
+      traits:['今弁慶の異名','鉄炮の名手','七尺の巨躯','義理堅い護衛','型破りな経歴'],
+      ab:[78,70,60,82,65,90],
+      saga:'西原古墳（佐賀市久保泉町川久保）\n阿含坊の墓碑がかつて前方後円墳の上に存在したが、昭和5年頃の道路拡張工事で消失。神代勝利館跡（佐賀市三瀬村）からは鉄炮玉の鋳型が出土している。',
+    },
+    en:{name:'Aganbou',yomi:'阿含坊 (?–?)',period:'?-?',sub:'Elite Gunner & Bodyguard Type',
+      desc:'A member of the Ijuin clan of Satsuma who killed a man over a go game and fled the province with the help of his uncle, a temple abbot. Becoming a yamabushi, he traveled to Kyoto to teach marksmanship before drifting into Hizen Sanuchi. He was discovered by Kumashiro Katsutoshi after shooting a pigeon from a tree with his rifle, causing a local farmer to faint in terror and report meeting "a great tengu." Standing seven feet tall with a massive beard and fearsome eyes, he slew the Ryuzoji veteran Ishii Kiyotatsu with a single shot at the Battle of Kanashiki Pass, and served as Katsutoshi personal bodyguard — earning the title "the modern Benkei."',
+      traits:['Called the Modern Benkei','Master marksman','Seven-foot frame','Loyal bodyguard','Extraordinary background'],
+      ab:[78,70,60,82,65,90],
+      saga:'Nishihara Kofun, Kuboizumi-cho, Saga City — Aganbou burial site, lost in a 1930 road expansion. Iron bullet molds attributed to his era were excavated at the Kumashiro Katsutoshi residence site in Mitse Village.',
+    },
+    zh:{name:'阿含坊',yomi:'あごんぼう (?-?)',period:'?-?',sub:'鐵炮術精湛的護衛型',
+      desc:'薩摩・伊集院氏一族。因圍棋糾紛殺人，在叔父（南林寺住職）的協助下逃出薩摩，成為山伏後赴京都指導鐵炮術，輾轉流落至肥前山內。因以鐵炮射落柿樹上的鳩，令附近百姓驚呼遭遇「大天狗」而被神代勝利發掘收入麾下。身高七尺，留大鬍子，容貌魁偉，臂力過人，目光銳利。在金敷峠之戰中潛伏於大樹後方，以鐵炮擊殺龍造寺宿老石井兼清，立下大功。平時寸步不離地護衛勝利左右，被稱讚為「今弁慶」。',
+      traits:['今弁慶之名','鐵炮名手','七尺巨軀','義理堅定的護衛','非凡的經歷'],
+      ab:[78,70,60,82,65,90],
+      saga:'西原古墳（佐賀市久保泉町川久保）\n阿含坊的墓碑曾存在於前方後圓墳上，昭和5年道路拓寬工程時消失。神代勝利館跡（三瀬村）出土了鐵炮彈的鑄模。',
+    },
+  },
+  kumashiro:{
+    emoji:'',
+    accentCls:'sumi',
+    ja:{name:'神代勝利',yomi:'くましろ かつとし',period:'1511-1565',sub:'山岳の盟主・独立のカリスマ型',
+      desc:'三瀬城主にして山内26ヶ山の諸豪を率いた山岳渓谷の盟主。剣豪にして人徳の大将。山道の通行税を徴収し鉄砲を製造・活用、鐘と狼煙のリレーによる急報ネットワークを山内全域に構築した。平地でも巧みな用兵をみせ、臆病な家臣を勇士へと育てる人心掌握術にも長けていた。大友氏に恭順しつつ龍造寺氏と激しく争い、一度は追われながらも元旦の逆襲で返り咲き、金敷峠の戦いで大勝する。落ち延びてきた千葉氏を庇護するなど義理と器量を兼ね備えた盟主。最終的に龍造寺隆信と和睦・婚姻で決着し佐賀の覇権を逸したが、その独立精神とカリスマは今も語り継がれる。',
+      traits:['独立精神・反骨の気概','山岳渓谷の盟主','剣豪の武威','義理と人徳','一進一退の覇権争い'],
+      ab:[78,82,75,85,68,85],
+      saga:'三瀬城跡（佐賀市三瀬村）\n千布城跡（佐賀市金立町千布）　神代勝利全盛期の山内最前衛基地。子・長良が居城したこともある。\n熊川城跡（佐賀市富士町上熊川）\n神代勝利墓所（佐賀市富士町大字関屋）\n川上の与止日女神社（佐賀市大和町）　龍造寺隆信との決戦地。',
+    },
+    en:{name:'Kumashiro Katsutoshi',yomi:'神代勝利 (1511–1565)',period:'1511-1565',sub:'Mountain Lord & Independent Charisma Type',
+      desc:'Lord of Mitse Castle and overlord of the 26 mountain clans of Sanuchi — a master swordsman and beloved leader. He levied tolls on mountain roads, accumulated wealth, and recent research suggests he even manufactured firearms. He fought Ryūzōji Takanobu as an equal rival, was once driven out, yet returned on New Year\'s Day to reclaim his domain and dealt Ryūzōji a crushing defeat at Kanashiki Pass. He sheltered the refugee Chiba clan and was entrusted with their treasures and succession rights. Though he ultimately made peace with Ryūzōji through marriage alliance and surrendered his bid for Saga, his fierce independent spirit remains legendary.',
+      traits:['Fierce independence','Mountain overlord','Master swordsman','Honor and humanity','Relentless rivalry'],
+      ab:[78,82,75,85,68,85],
+      saga:'Mitse Castle ruins, Mitse Village, Saga City\nYodohime Shrine, Yamato-cho, Saga City — site of the decisive battle against Ryūzōji Takanobu.',
+    },
+    zh:{name:'神代勝利',yomi:'くましろ かつとし (1511-1565)',period:'1511-1565',sub:'山岳盟主・獨立魅力型',
+      desc:'三瀨城主，統率山內26山諸豪的山岳溪谷盟主。劍豪兼具人望的大將。徵收山道通行稅，製造鐵砲，建立獨自的經濟圈。一邊臣服大友氏，一邊與龍造寺氏激烈爭霸；雖一度被迫出逃，卻在元旦發動逆襲奪回領地，並在鐵布峠之戰大勝龍造寺氏。庇護出逃的千葉氏並受託家督與寶物，展現義理與器量。最終與龍造寺隆信和睦聯姻，惜失佐賀霸權，但其獨立精神與魅力至今仍為人傳頌。',
+      traits:['獨立精神與反骨氣概','山岳溪谷盟主','劍豪武威','義理與人望','反覆拉鋸的霸權之爭'],
+      ab:[78,82,75,85,68,85],
+      saga:'三瀨城遺址（佐賀市三瀨村）\n千布城遺址（佐賀市金立町千布）　神代勝利全盛期山內最前衛基地，其子長良亦曾居於此。\n熊川城遺址（佐賀市富士町上熊川）\n神代勝利墓所（佐賀市富士町大字關屋）\n川上與止日女神社（佐賀市大和町）　龍造寺隆信決戰之地。',
+    },
+  },
+  narimatsu:{
+    emoji:'',
+    accentCls:'kin',
+    ja:{name:'成松信勝',yomi:'なりまつ のぶかつ',period:'1540-1584',sub:'忠義・派手好みの猛将型',
+      desc:'龍造寺四天王の筆頭格。今山の戦いでは大友軍の司令官を討ち取る大功を挙げ、隆信から感状を受けた。倶利伽羅の前立ての兜を用いる派手好みの一面を持ちながら、須古城普請の奉行職もきっちりこなす文武両道の将。沖田畷の窮地では、金色に日の丸の扇を高くかかげ「我こそは大友八郎を討ちし成松遠江守なり！」と大音声で名乗りを上げ、隆信を守るべく敵勢へ単身斬り込み、壮絶な殉死を遂げた。',
+      traits:['四天王筆頭の忠義','派手好み・華のある武将','勇猛果敢','文武両道','壮絶な殉死'],
+      ab:[90,60,72,92,55,99],
+      saga:'今山（佐賀市大和町）\n今山の戦いの激戦地。成松が大友軍司令官を討ち取った舞台。現在も今山八幡宮が鎮座する。\n成松信勝墓所・成松家墓所（正定寺、佐賀市川副町南里）',
+    },
+    en:{name:'Narimatsu Nobukatsu',yomi:'成松信勝 (1540–1584)',period:'1540-1584',sub:'Loyal & Flamboyant Champion Type',
+      desc:'The foremost of the Ryūzōji Four Heavenly Kings. At the Battle of Imayama, he slew the Ōtomo army\'s commander and received a letter of commendation from Takanobu. Known for his flamboyant helmet adorned with a Kurikara dragon crest, he was equally capable as a construction overseer — a true all-rounder. At Okitanawate, facing certain defeat, he raised a golden fan bearing the Rising Sun, roared "I am Narimatsu Tōtōmi-no-kami — come and take my head!" and charged alone into the enemy to protect Takanobu, dying a glorious death.',
+      traits:['Foremost loyal retainer','Flamboyant & charismatic','Ferociously brave','Warrior and administrator','Glorious last stand'],
+      ab:[90,60,72,92,55,99],
+      saga:'Imayama, Yamato-cho, Saga City — site of the fierce battle. Imayama Hachiman Shrine stands there today.',
+    },
+    zh:{name:'成松信勝',yomi:'なりまつ のぶかつ (1540-1584)',period:'1540-1584',sub:'忠義華麗型猛將',
+      desc:'龍造寺四天王之首。在今山之戰中斬殺大友軍司令官，立下大功獲隆信賜感狀。以倶利伽羅龍紋前立兜著稱，喜好華麗裝扮，卻也踏實擔任須古城修築奉行，文武兼備。在沖田畷的絕境中，高舉金色日丸扇，大喊「吾乃成松遠江守！欲取此首者上前來！」，單身衝入敵陣護衛隆信，壯烈殉死。',
+      traits:['四天王之首的忠義','喜好華麗的武將','勇猛果敢','文武兼備','壯烈殉死'],
+      ab:[90,60,72,92,55,99],
+      saga:'今山（佐賀市大和町）\n今山之戰的激戰地，現今山八幡宮坐鎮於此。\n成松信勝墓所・成松家墓所（正定寺，佐賀市川副町南里）',
+    },
+  },
+  tabaru:{
+    emoji:'🏹',
+    accentCls:'ai',
+    ja:{name:'田原尚明',yomi:'たばる ひさあき',period:'?-1584',sub:'知略・諜報の腹心型',
+      desc:'元山伏という異色の経歴を持ち、龍造寺隆信に見出されて仕えた外交官・諜報の達人。蒲池氏の動向を探る「横目（目付）」役や、毛利輝元への使節、蒲池鎮並を佐賀へ誘き出す謀略の実行など、龍造寺外交の最前線で活躍。「心賢き者」と称され、沖田畷の戦いで隆信と共に戦死した、隆信にとって重要な腹心であった。',
+      traits:['知略・諜報','胆力と使命感','山伏ゆかりの機動力','隆信への絶対忠節','表に出ない縁の下'],
+      ab:[80,95,55,70,92,96],
+      saga:'修理田神社（佐賀市巨勢町）\n尚明が天正七年（1579）に熊野権現を勧請した地。子孫の蔵福坊が代々神主を務めた。',
+    },
+    en:{name:'Tabaru Naoaki',yomi:'田原尚明 (?–1584)',period:'?-1584',sub:'Trusted Strategist & Intelligence Type',
+      desc:'A former yamabushi recruited by Takanobu, who became the clan\'s indispensable spy and diplomat. He monitored the Kamachi clan, served as envoy to Mōri Terumoto, and personally lured a treacherous lord to his doom. Praised as "a man of keen mind," he died alongside Takanobu at Okitanawate, serving as one of his most trusted confidants.',
+      traits:['Strategic intelligence','Steely resolve','Yamabushi mobility','Absolute loyalty','Shadow operative'],
+      ab:[80,95,55,70,92,96],
+      saga:'Shūrita Shrine, Kose-cho, Saga City — where Naoaki enshrined Kumano Gongen in 1579.',
+    },
+    zh:{name:'田原尚明',yomi:'たばる ひさあき (?-1584)',period:'?-1584',sub:'謀略諜報・腹心型',
+      desc:'以山伏出身被龍造寺隆信重用，擔任諜報與外交達人。監視蒲池氏、出使毛利輝元、執行誘殺謀略，被稱為「心思敏銳之人」。在沖田畷之戰與隆信並肩戰死，是隆信最重要的腹心之臣。',
+      traits:['謀略諜報','膽識使命感','山伏機動力','絕對忠誠','幕後智將'],
+      ab:[80,95,55,70,92,96],
+      saga:'修理田神社（佐賀市巨勢町）\n尚明於1579年在此勸請熊野權現，子孫世代擔任神主。',
+    },
+  },
+};
+
+const typeList={
+  ja:[
+    {id:'takanobu', name:'龍造寺隆信',role:'革命的カリスマ型'},
+    {id:'naganobu', name:'龍造寺長信',role:'献身的補佐役型'},
+    {id:'nobukane', name:'龍造寺信周',role:'調整・危機管理型'},
+    {id:'ieharu',   name:'龍造寺家晴',role:'柔軟なエース実戦型'},
+    {id:'nobukage', name:'納富信景',  role:'堅実名将・アンサングヒーロー型'},
+    {id:'naritomi', name:'成富茂安',  role:'変革と多才・治水の猛将型'},
+    {id:'naoshige',  name:'鍋島直茂',  role:'大局観と誠実・佐賀藩祖型'},
+    {id:'hirai',     name:'平井経治',  role:'防御型の勇将・地の利の名手型'},
+    {id:'chiba',     name:'千葉興常',  role:'名門の権威・屋形型'},
+    {id:'chikushi',  name:'筑紫広門',  role:'臨機応変の境目武将型'},
+    {id:'baba',      name:'馬場頼周',  role:'評価の分かれる忠義の謀略家型'},
+    {id:'iekane',    name:'龍造寺家兼',role:'不屈の長寿武将・中興の祖型'},
+    {id:'aganbou',   name:'阿含坊',   role:'鉄砲術に優れたボディガード型'},
+    {id:'kumashiro',name:'神代勝利',  role:'山岳の盟主・独立のカリスマ型'},
+    {id:'narimatsu',name:'成松信勝',  role:'忠義・派手好みの猛将型'},
+    {id:'tabaru',   name:'田原尚明',  role:'知略・諜報の腹心型'},
+  ],
+  en:[
+    {id:'takanobu', name:'Ryūzōji Takanobu',   role:'Charismatic Conqueror'},
+    {id:'naganobu', name:'Ryūzōji Naganobu',   role:'Devoted Supporter'},
+    {id:'nobukane', name:'Ryūzōji Nobukane',   role:'Crisis Manager'},
+    {id:'ieharu',   name:'Ryūzōji Ieharu',    role:'Flexible Ace Warrior'},
+    {id:'nobukage', name:'Nōtomi Nobukage',    role:'Unsung Hero & Steady Commander'},
+    {id:'naritomi', name:'Naritomi Shigeyasu', role:'Self-Made Versatile Commander'},
+    {id:'naoshige',  name:'Nabeshima Naoshige', role:'Grand Strategist & Founder of Saga Domain'},
+    {id:'hirai',     name:'Hirai Tsuneharu',     role:'Defensive Genius & Master of Terrain'},
+    {id:'chiba',     name:'Chiba Okitsune',       role:'Noble Authority & Lord of the Manor'},
+    {id:'chikushi',  name:'Chikushi Hirokado',    role:'Adaptable Borderland Warrior'},
+    {id:'baba',      name:'Baba Yorichika',       role:'Controversial Loyal Strategist'},
+    {id:'iekane',    name:'Ryuzoji Iekane',       role:'Indomitable Elder & Clan Reviver'},
+    {id:'aganbou',   name:'Aganbou',             role:'Elite Gunner & Bodyguard'},
+    {id:'kumashiro',name:'Kumashiro Katsutoshi',role:'Mountain Lord & Independent Charisma'},
+    {id:'narimatsu',name:'Narimatsu Nobukatsu',role:'Loyal & Flamboyant Champion'},
+    {id:'tabaru',   name:'Tabaru Naoaki',      role:'Trusted Strategist & Intelligence Operative'},
+  ],
+  zh:[
+    {id:'takanobu', name:'龍造寺隆信',role:'革命型魅力領袖'},
+    {id:'naganobu', name:'龍造寺長信',role:'忠誠奉獻型輔佐者'},
+    {id:'nobukane', name:'龍造寺信周',role:'調和型危機管理者'},
+    {id:'ieharu',   name:'龍造寺家晴',role:'靈活實戰型王牌武將'},
+    {id:'nobukage', name:'納富信景',  role:'沉穩名將・無名英雄型'},
+    {id:'naritomi', name:'成富茂安',  role:'自我蛻變的多才猛將型'},
+    {id:'naoshige',  name:'鍋島直茂',  role:'大局觀與誠實・佐賀藩祖型'},
+    {id:'hirai',     name:'平井經治',  role:'防禦型勇將・地利名手型'},
+    {id:'chiba',     name:'千葉興常',  role:'名門權威・屋形型'},
+    {id:'chikushi',  name:'筑紫廣門',  role:'臨機應變的境界武將型'},
+    {id:'baba',      name:'馬場賴周',  role:'評價分歧的忠義謀略家型'},
+    {id:'iekane',    name:'龍造寺家兼',role:'不屈長壽武將・中興之祖型'},
+    {id:'aganbou',   name:'阿含坊',   role:'鐵炮術精湛的護衛型'},
+    {id:'kumashiro',name:'神代勝利',  role:'山岳盟主・獨立魅力型'},
+    {id:'narimatsu',name:'成松信勝',  role:'忠義華麗型猛將'},
+    {id:'tabaru',   name:'田原尚明',  role:'謀略諜報・腹心型'},
+  ],
+};
+
+/* ══════════════════════════════════
+   設問（8問×6択・16タイプ均等版）
+══════════════════════════════════ */
+const Q={
+  ja:[
+    {text:'むずかしい場面でまず動くなら、あなたはどのタイプ？',ch:[
+      {t:'チャンスを見きわめて、すばやく動く',s:'T'},
+      {t:'全体の流れを読んで、ここぞという時に動く',s:'D'},
+      {t:'とにかく前に出る。体を張るのが自分の役目だ',s:'M'},
+      {t:'失敗しても必ず立ちなおせる。そう信じて動く',s:'E'},
+      {t:'どんな役わりでもこなせる。状況に合わせて動く',s:'B'},
+      {t:'求められた役をこなすことで、自分の価値を示す',s:'I'},
+    ]},
+    {text:'チームや組織の中で、自分がやりがちな役わりは？',ch:[
+      {t:'じゅんびや補給など、縁の下の仕事をこなす',s:'N'},
+      {t:'みんなの意見をまとめて、落としどころを見つける',s:'S'},
+      {t:'自分の立場や権威をうまく活かして、全体をまとめる',s:'C'},
+      {t:'むやみに動かない。守りを固めて相手のすきをつく',s:'H'},
+      {t:'上位の権力をうまく使い分けながら、組織を動かす',s:'X'},
+      {t:'型破りな経歴を活かして、誰もできない仕事をする',s:'J'},
+    ]},
+    {text:'ピンチのとき、自分の心はどう動く？',ch:[
+      {t:'燃える！ここがふんばりどころだ',s:'T'},
+      {t:'誰の傘下にも入らず、自分の流儀で乗り越える',s:'G'},
+      {t:'目に見えないところから、状況を変える手を打つ',s:'A'},
+      {t:'信じた主君・仲間のために、批判されてもやり通す',s:'R'},
+      {t:'手を抜かず着実に。地道な積み重ねが力になる',s:'K'},
+      {t:'あいてが敵でも、誠実に向き合って打開策を探す',s:'D'},
+    ]},
+    {text:'人とのつき合い方で、大切にしていることは？',ch:[
+      {t:'縁の下で長く支えること自体が、自分の誇りだ',s:'N'},
+      {t:'ひつようならなんでもやる。広いつながりが力になる',s:'B'},
+      {t:'求められた場に柔軟になじみ、信頼を積み上げる',s:'I'},
+      {t:'どんな立場に置かれても、うまく立ち回ってきた',s:'X'},
+      {t:'何度打ちのめされても必ず戻る。不屈が自分の核心だ',s:'E'},
+      {t:'自分の出自・立場が自然と周囲に影響を与えている',s:'C'},
+    ]},
+    {text:'いちばん達成感を感じる瞬間は？',ch:[
+      {t:'晴れ舞台で名のりをあげる。そういう美学がある',s:'M'},
+      {t:'何度も攻められても守りきった時。それが自分の誇りだ',s:'H'},
+      {t:'型破りな道で、誰も想像しなかった結果を出した時',s:'J'},
+      {t:'名前が残らなくてもいい。ただ確実にやり遂げた時',s:'K'},
+      {t:'争いをおさめ、人と人をつないで場をまとめた時',s:'S'},
+      {t:'大局を読み、御家や組織を次の世代につなげた時',s:'D'},
+    ]},
+    {text:'大きな失敗のあと、どうする？',ch:[
+      {t:'実力で道を開いてきた。今回も自分を信じて動く',s:'T'},
+      {t:'だれも知らないところで、静かに次の手を打つ',s:'A'},
+      {t:'誰の傘下にも入らず、自分の信念を貫いて再起する',s:'G'},
+      {t:'主君や仲間への忠義が一番。そのために立て直す',s:'R'},
+      {t:'惨劇を経験しても必ず戻る。それが自分の生き様だ',s:'E'},
+      {t:'ひとりでも多才なので、ちがう形で価値を出せる',s:'B'},
+    ]},
+    {text:'自分の「存在のしかた」として、いちばん近いのは？',ch:[
+      {t:'縁の下で黙って長く支えることが、自分の誇りだ',s:'N'},
+      {t:'対話で人をつなぎ、争いをおさめることが使命だ',s:'S'},
+      {t:'自分の権威や名門の格が、自然と場に影響を与える',s:'C'},
+      {t:'境目に立ち、どの勢力とも渡り合える柔軟さがある',s:'X'},
+      {t:'攻めるより守ることに、自分らしさと誇りがある',s:'H'},
+      {t:'異色の経歴でたどり着いた場所で、全力を尽くす',s:'J'},
+    ]},
+    {text:'自分のことを一言で言うなら、どれがいちばん近い？',ch:[
+      {t:'どんな役わりにも柔軟になじみ、求められた場所で輝く',s:'I'},
+      {t:'名前も記録も残らなくていい。ただ確実にやり遂げる',s:'K'},
+      {t:'主君と仲間のために、命をおしまず全力で戦い抜く',s:'M'},
+      {t:'広い目で御家を守り、誠実に道をひらいてきた',s:'D'},
+      {t:'誰にも頼らず、山岳の盟主として自分の流儀で生きる',s:'G'},
+      {t:'表には出ず、誰も知らないところで本質的な仕事をする',s:'A'},
+    ]},
+  ],
+  en:[
+    {text:'When things get tough, which type are you?',ch:[
+      {t:'Spot the opportunity and move fast',s:'T'},
+      {t:'Read the situation and move decisively at the right moment',s:'D'},
+      {t:'Step forward immediately — putting yourself on the line is your job',s:'M'},
+      {t:'You have bounced back before — you move forward trusting that',s:'E'},
+      {t:'Adapt to whatever is needed — flexibility is your strength',s:'B'},
+      {t:'Show your value by fulfilling whatever role is asked of you',s:'I'},
+    ]},
+    {text:'What role do you naturally take in a team?',ch:[
+      {t:'Handle the behind-the-scenes work — logistics and preparation',s:'N'},
+      {t:'Bring people together and find a solution everyone can accept',s:'S'},
+      {t:'Use your authority and standing to bring the group together',s:'C'},
+      {t:'Hold firm and defend — wait for the right moment to strike',s:'H'},
+      {t:'Read the power structure and move the organization skillfully',s:'X'},
+      {t:'Use your unconventional background to do what no one else can',s:'J'},
+    ]},
+    {text:'When you face a real crisis, how do you feel inside?',ch:[
+      {t:'Fired up — this is the moment to dig in and fight',s:'T'},
+      {t:'Independent — you live by your own code and get through it alone',s:'G'},
+      {t:'Calm — you work from the shadows to shift the situation',s:'A'},
+      {t:'Loyal — you push through for your lord and comrades, no matter what',s:'R'},
+      {t:'Steady — patient effort and consistency will see you through',s:'K'},
+      {t:'Sincere — even with rivals, honest engagement opens the way',s:'D'},
+    ]},
+    {text:'What matters most to you in relationships?',ch:[
+      {t:'Supporting quietly from behind — that itself is your pride',s:'N'},
+      {t:'Do whatever is needed — wide connections are your power',s:'B'},
+      {t:'Adapt flexibly to each situation and build trust steadily',s:'I'},
+      {t:'Make the best of whatever position you are placed in',s:'X'},
+      {t:'No matter how many times you fall, you always come back',s:'E'},
+      {t:'Your background and standing naturally influence those around you',s:'C'},
+    ]},
+    {text:'When do you feel the strongest sense of achievement?',ch:[
+      {t:'Standing up and announcing your name at the key moment',s:'M'},
+      {t:'Holding the line against repeated attacks — unshakeable',s:'H'},
+      {t:'Taking an unconventional path and delivering an unexpected result',s:'J'},
+      {t:'Seeing every job through without needing recognition',s:'K'},
+      {t:'Resolving conflict and connecting people so things come together',s:'S'},
+      {t:'Reading the big picture and passing something on to the next generation',s:'D'},
+    ]},
+    {text:'After a big failure, what do you do?',ch:[
+      {t:'You have opened your path through ability before — trust that again',s:'T'},
+      {t:'Quietly make your next move from where no one can see',s:'A'},
+      {t:'Rebuild on your own terms, outside anyone else\'s authority',s:'G'},
+      {t:'Your loyalty drives the rebuild — you do it for those you serve',s:'R'},
+      {t:'You have survived tragedy before and come back — this is no different',s:'E'},
+      {t:'Your versatility means you can rebuild in a completely different form',s:'B'},
+    ]},
+    {text:'Which best describes how you exist in the world?',ch:[
+      {t:'Supporting quietly for the long haul — that is your pride',s:'N'},
+      {t:'Connecting people through dialogue and resolving conflict is your mission',s:'S'},
+      {t:'Your lineage and authority naturally shapes those around you',s:'C'},
+      {t:'Standing at the crossroads, you can deal with any power on your terms',s:'X'},
+      {t:'Defending rather than attacking — that is where your true self lives',s:'H'},
+      {t:'An unconventional road brought you here — and you give it everything',s:'J'},
+    ]},
+    {text:'If you had to describe yourself in one phrase, which fits best?',ch:[
+      {t:'I shine wherever I am needed, adapting to any role',s:'I'},
+      {t:'No name, no record needed — I just see every job through',s:'K'},
+      {t:'I fight with everything I have for my lord and comrades',s:'M'},
+      {t:'I have protected my people with a long view and opened the way through honesty',s:'D'},
+      {t:'I answer to no one — I live by my own code as lord of my domain',s:'G'},
+      {t:'I do the essential work in places no one sees or knows about',s:'A'},
+    ]},
+  ],
+  zh:[
+    {text:'遇到困難時，您是哪種類型？',ch:[
+      {t:'看準機會，迅速行動',s:'T'},
+      {t:'讀取整體局勢，在關鍵時刻果斷出手',s:'D'},
+      {t:'立刻衝到前面，挺身而出是自己的職責',s:'M'},
+      {t:'就算失敗過也能重新站起來，相信自己並行動',s:'E'},
+      {t:'什麼角色都能勝任，靈活因應狀況行動',s:'B'},
+      {t:'透過完成被賦予的角色，展現自己的價值',s:'I'},
+    ]},
+    {text:'在團隊或組織中，您通常扮演什麼角色？',ch:[
+      {t:'默默做好準備和補給等幕後工作',s:'N'},
+      {t:'整合大家的意見，找出各方都能接受的方向',s:'S'},
+      {t:'善用自己的立場與權威，統合整體',s:'C'},
+      {t:'不輕易出手，固守陣地等待對方露出破綻',s:'H'},
+      {t:'靈活運用上位權力，推動組織運作',s:'X'},
+      {t:'活用非凡經歷，做別人做不到的工作',s:'J'},
+    ]},
+    {text:'面對危機時，您的內心是什麼感覺？',ch:[
+      {t:'鬥志燃起！這正是奮力一搏的時刻',s:'T'},
+      {t:'不在任何人傘下，以自己的流儀克服難關',s:'G'},
+      {t:'從看不見的地方，靜靜地打出改變局勢的一手',s:'A'},
+      {t:'為了信任的主君與同伴，就算被批評也要貫徹到底',s:'R'},
+      {t:'不偷工減料、踏實積累，這份力量支撐著自己',s:'K'},
+      {t:'即使對方是敵人，也以誠相待，尋求突破口',s:'D'},
+    ]},
+    {text:'在人際關係中，您最重視什麼？',ch:[
+      {t:'在幕後默默長期支撐，這本身就是自己的驕傲',s:'N'},
+      {t:'需要什麼就做什麼，廣泛的人脈就是力量',s:'B'},
+      {t:'靈活融入被需要的場合，踏實積累信任',s:'I'},
+      {t:'無論身處何種立場，都能巧妙地周旋',s:'X'},
+      {t:'無論被打倒多少次都必定回來，不屈是自己的核心',s:'E'},
+      {t:'自己的出身與立場，自然地對周圍產生影響',s:'C'},
+    ]},
+    {text:'最有成就感的瞬間是什麼時候？',ch:[
+      {t:'在關鍵舞台上高聲報上名號，這就是我的美學',s:'M'},
+      {t:'多次遭受攻擊卻守住了陣地，這就是自己的驕傲',s:'H'},
+      {t:'走過一條非凡的道路，交出了誰都沒預料到的成果',s:'J'},
+      {t:'不需要留名，只要確實完成了每一項使命',s:'K'},
+      {t:'化解對立，連結人與人，讓事情圓滿收場的時候',s:'S'},
+      {t:'洞悉大局，將御家與組織傳承給下一代的時候',s:'D'},
+    ]},
+    {text:'遭遇重大失敗後，您會怎麼做？',ch:[
+      {t:'靠實力開拓道路是一貫的風格，這次也相信自己',s:'T'},
+      {t:'在沒有人看見的地方，靜靜地打出下一步',s:'A'},
+      {t:'不在任何人的框架內，以自己的信念重新站起來',s:'G'},
+      {t:'對主君與同伴的忠義驅使著重建，為他們而行動',s:'R'},
+      {t:'經歷過慘劇也能重來，這就是自己的生存之道',s:'E'},
+      {t:'多才多藝，可以用完全不同的形式重新創造價值',s:'B'},
+    ]},
+    {text:'關於自己的「存在方式」，哪個最接近您？',ch:[
+      {t:'在幕後默默長期支撐，這本身就是自己的驕傲',s:'N'},
+      {t:'以對話連結人們、化解紛爭，這是自己的使命',s:'S'},
+      {t:'自己的名門血統與權威，自然地影響著周圍',s:'C'},
+      {t:'站在境界線上，能與任何勢力周旋的靈活性',s:'X'},
+      {t:'比起進攻，守護更能展現自己真正的本色',s:'H'},
+      {t:'走過了一條非凡的道路，在落腳之處全力以赴',s:'J'},
+    ]},
+    {text:'用一句話形容自己，哪個最貼近？',ch:[
+      {t:'無論在哪裡都能靈活融入，在被需要的地方發光',s:'I'},
+      {t:'不需要留名也不需要記錄，只要確實完成使命',s:'K'},
+      {t:'為主君與同伴不惜性命，全力以赴地戰鬥到底',s:'M'},
+      {t:'以長遠目光守護御家，以誠實開拓前路',s:'D'},
+      {t:'不受任何人管束，以山岳盟主的流儀生活',s:'G'},
+      {t:'在沒有人看見的地方，做著最根本、最重要的工作',s:'A'},
+    ]},
+  ],
+};
+
+/* ══════════════════════════════════
+   色鍋島 SVG 紋章
+══════════════════════════════════ */
+function kamonSVG(sz,accent){
+  const c={shu:'#c8361a',midori:'#3d7a35',kin:'#c4861a',ai:'#1a3a5c',beni:'#8b2252',fuji:'#5c4a8a',sumi:'#2a2420',sagamidori:'#1a6b5a',seiji:'#4a7a6a'}[accent]||'#1a3a5c';
+  return `<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="48" cy="48" r="45" fill="none" stroke="${c}" stroke-width="2.5"/>
+  <circle cx="48" cy="48" r="36" fill="none" stroke="${c}" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <circle cx="48" cy="48" r="24" fill="none" stroke="${c}" stroke-width="0.8"/>
+  <path d="M48 3 Q62 28 48 48 Q34 28 48 3Z" fill="${c}" opacity="0.22"/>
+  <path d="M48 93 Q62 68 48 48 Q34 68 48 93Z" fill="${c}" opacity="0.22"/>
+  <path d="M3 48 Q28 62 48 48 Q28 34 3 48Z" fill="${c}" opacity="0.22"/>
+  <path d="M93 48 Q68 62 48 48 Q68 34 93 48Z" fill="${c}" opacity="0.22"/>
+  <circle cx="48" cy="48" r="8" fill="${c}" opacity="0.55"/>
+  <circle cx="48" cy="48" r="4" fill="${c}" opacity="0.85"/>
+  </svg>`;
+}
+
+/* ══════════════════════════════════
+   色違い扇 SVG
+   accent: shu=朱 / midori=緑 / kin=金 / ai=藍
+   size: 'sm'=小（カード用）/ 'lg'=大（結果画面用）
+══════════════════════════════════ */
+function sensuSVG(accent, size='sm'){
+  const palette={
+    shu:  {main:'#c8361a', mid:'#e05530', light:'#f4a98a', dark:'#8b1f0e', rib:'#7a1a08'},
+    midori:{main:'#3d7a35', mid:'#5aaa4a', light:'#a8d89e', dark:'#234d1e', rib:'#1e4018'},
+    kin:  {main:'#c4861a', mid:'#e8b840', light:'#f5dea0', dark:'#7a5008', rib:'#6a4206'},
+    ai:   {main:'#1a3a5c', mid:'#2a5482', light:'#8ab0d4', dark:'#0d1f33', rib:'#0a1828'},
+    beni: {main:'#8b2252', mid:'#c05080', light:'#f0aac8', dark:'#4a1030', rib:'#3a0820'},
+    fuji: {main:'#5c4a8a', mid:'#8a72c0', light:'#c8b8f0', dark:'#2e2448', rib:'#201a38'},
+    sumi: {main:'#2a2420', mid:'#4a4240', light:'#9a9290', dark:'#0e0c0a', rib:'#0a0806'},
+    sagamidori: {main:'#1a6b5a', mid:'#2a9b80', light:'#8ad4c0', dark:'#0a3d30', rib:'#083228'},
+    seiji:      {main:'#4a7a6a', mid:'#6aa090', light:'#b0d4cc', dark:'#203830', rib:'#182c26'},
+  };
+  const p = palette[accent] || palette.ai;
+  const vb = size==='lg' ? '0 0 120 120' : '0 0 80 80';
+  const cx = size==='lg' ? 60 : 40;
+  const cy = size==='lg' ? 110 : 72;
+  const r1 = size==='lg' ? 90 : 60;
+  const r2 = size==='lg' ? 40 : 26;
+  const sw = size==='lg' ? 2 : 1.2;
+
+  // 扇の骨（7本）を cx,cy 起点に扇形に広げる
+  // 開き角度: -80° 〜 0° （左上へ扇形）
+  const ribAngles = [-80,-63,-46,-30,-14,3,20];
+  const toRad = d => d * Math.PI / 180;
+
+  // 扇面（塗り）のパス: r2〜r1の扇形セクター
+  function sectorPath(a1deg, a2deg){
+    const a1=toRad(a1deg), a2=toRad(a2deg);
+    const x1=cx+r2*Math.cos(a1), y1=cy+r2*Math.sin(a1);
+    const x2=cx+r1*Math.cos(a1), y2=cy+r1*Math.sin(a1);
+    const x3=cx+r1*Math.cos(a2), y3=cy+r1*Math.sin(a2);
+    const x4=cx+r2*Math.cos(a2), y4=cy+r2*Math.sin(a2);
+    return `M${x1},${y1} L${x2},${y2} A${r1},${r1} 0 0,1 ${x3},${y3} L${x4},${y4} A${r2},${r2} 0 0,0 ${x1},${y1}Z`;
+  }
+
+  // 交互に濃淡の色を塗る（色鍋島風）
+  const sectorColors = [p.light, p.mid, p.light, p.main, p.light, p.mid, p.light];
+  const angles = [-80,-63,-46,-30,-14,3,20,37];
+  const sectors = angles.slice(0,-1).map((a,i)=>
+    `<path d="${sectorPath(a, angles[i+1])}" fill="${sectorColors[i]}" opacity="0.92"/>`
+  ).join('');
+
+  // 骨線
+  const ribs = ribAngles.map(a=>{
+    const x1=cx+r2*Math.cos(toRad(a)), y1=cy+r2*Math.sin(toRad(a));
+    const x2=cx+r1*Math.cos(toRad(a)), y2=cy+r1*Math.sin(toRad(a));
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${p.rib}" stroke-width="${sw}" opacity="0.7"/>`;
+  }).join('');
+
+  // 外弧・内弧
+  const outerArc = `<path d="M${cx+r1*Math.cos(toRad(-80))},${cy+r1*Math.sin(toRad(-80))} A${r1},${r1} 0 0,1 ${cx+r1*Math.cos(toRad(37))},${cy+r1*Math.sin(toRad(37))}" fill="none" stroke="${p.dark}" stroke-width="${sw*1.2}"/>`;
+  const innerArc = `<path d="M${cx+r2*Math.cos(toRad(-80))},${cy+r2*Math.sin(toRad(-80))} A${r2},${r2} 0 0,1 ${cx+r2*Math.cos(toRad(37))},${cy+r2*Math.sin(toRad(37))}" fill="none" stroke="${p.dark}" stroke-width="${sw}"/>`;
+
+  // 要（かなめ）の円
+  const pivot = `<circle cx="${cx}" cy="${cy}" r="${size==='lg'?5:3.5}" fill="${p.dark}"/><circle cx="${cx}" cy="${cy}" r="${size==='lg'?2.5:1.8}" fill="${p.light}"/>`;
+
+  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">${sectors}${ribs}${outerArc}${innerArc}${pivot}</svg>`;
+}
+
+/* ══════════════════════════════════
+   State
+══════════════════════════════════ */
+let lang='ja', phase='intro', cur=0, sel=null;
+let tally={T:0,N:0,S:0,A:0,I:0,K:0,M:0,B:0,G:0,D:0,H:0,C:0,X:0,R:0,E:0,J:0}, rkey=null;
+
+/* ══════════════════════════════════
+   Render
+══════════════════════════════════ */
+function render(){
+  const app=document.getElementById('app');
+  app.innerHTML='';
+
+  // lang bar
+  const lb=document.createElement('div');
+  lb.className='lang-bar';
+  lb.innerHTML=[['ja','日本語'],['en','English'],['zh','中文']].map(([l,label])=>
+    `<button class="lang-btn${lang===l?' active':''}" data-lang="${l}">${label}</button>`
+  ).join('');
+  app.appendChild(lb);
+
+  const scr=document.createElement('div');
+  scr.className='screen';
+  if(phase==='intro') scr.innerHTML=renderIntro();
+  else if(phase==='quiz') scr.innerHTML=renderQuiz();
+  else scr.innerHTML=renderResult();
+  app.appendChild(scr);
+
+  attachEvents();
+  if(phase==='result') setTimeout(animateAbility, 380);
+}
+
+function renderIntro(){
+  const t=T[lang], tl=typeList[lang];
+  const accentCls=['shu','midori','kin','beni','fuji','midori','ai','midori','kin','fuji','shu','beni','midori','sumi','kin','ai'];
+  return `
+  <div class="header fu">
+    <div class="header-org">${t.org}</div>
+    <div class="header-emblem">${kamonSVG(88,'shu')}</div>
+    <div class="header-title">${t.title.replace('\n','<br>')}</div>
+    <div class="header-title-en">${t.sub}</div>
+  </div>
+
+  <div class="iro-card fu d1">
+    <div class="card-stripe"></div>
+    <p class="intro-text">${t.lead.replace('\n\n','<br><br>')}</p>
+    <div class="divider"><span class="divider-icon">❖</span></div>
+    <div style="font-size:9.5px;letter-spacing:.22em;color:var(--ai);margin-bottom:10px;font-weight:700;">${t.types_title}</div>
+    <div class="warrior-grid">
+      ${tl.map((w,i)=>`
+      <div class="warrior-card" data-wid="${w.id}">
+        <div class="warrior-emoji">${sensuSVG(accentCls[i],'sm')}</div>
+        <div>
+          <div class="warrior-name-ja" style="color:var(--${accentCls[i]||'ai'})">${w.name}</div>
+          <div class="warrior-role">${w.role}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <button class="btn-start" id="startBtn">${t.start}</button>
+  </div>`;
+}
+
+function renderQuiz(){
+  const t=T[lang], qs=Q[lang], q=qs[cur], tot=qs.length;
+  const pct=Math.round(cur/tot*100);
+  const dots=Array.from({length:tot},(_,i)=>{
+    const cls=i<cur?'done':i===cur?'cur':'';
+    return `<div class="pdot ${cls}"></div>`;
+  }).join('');
+  return `
+  <div class="progress-wrap fu">
+    <div class="progress-meta">
+      <span class="progress-label">${t.qpre}${cur+1}${t.qsuf} ${t.tpre}${tot}${t.tsuf}</span>
+      <span class="progress-pct">${pct}%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-dots">${dots}</div>
+  </div>
+
+  <div class="iro-card fu d1">
+    <div class="card-stripe"></div>
+    <div class="q-badge">${t.qpre} ${cur+1} ${t.qsuf}</div>
+    <div class="q-text">${q.text}</div>
+    <div class="choices">
+      ${q.ch.map((c,i)=>`
+        <button class="choice-btn${sel===i?' selected':''}" data-idx="${i}">${c.t}</button>
+      `).join('')}
+    </div>
+  </div>
+  <div class="nav">
+    <button class="btn-next" id="nextBtn" ${sel===null?'disabled':''}>
+      ${cur===Q[lang].length-1?t.judge:t.next} ›
+    </button>
+  </div>`;
+}
+
+function renderResult(){
+  const t=T[lang], w=W[rkey], wd=w[lang];
+  const colorCls=['c0','c1','c2','c3','c4'];
+  const abBars=t.ab.map((label,i)=>`
+    <div class="ab-row">
+      <div class="ab-meta">
+        <span>${label}</span>
+        <span class="ab-score">${wd.ab[i]}</span>
+      </div>
+      <div class="ab-track">
+        <div class="ab-fill ${colorCls[i%5]}" data-val="${wd.ab[i]/100}"></div>
+      </div>
+    </div>`).join('');
+
+  return `
+  <div class="result-hero-band fu">
+    <div class="result-type-badge">${t.result_lbl}</div>
+    <div class="result-kamon-wrap">${kamonSVG(96, w.accentCls)}
+      <div class="result-sensu-over">${sensuSVG(w.accentCls,'lg')}</div>
+    </div>
+    <div class="result-name">${wd.name}</div>
+    <div class="result-yomi">${wd.yomi}</div>
+    <div class="result-subtitle-tag">${wd.sub}</div>
+  </div>
+
+  <div class="r-card fu d1">
+    <div class="r-label ${w.accentCls}">${t.s_profile}</div>
+    <p class="r-desc">${wd.desc}</p>
+  </div>
+
+  <div class="r-card fu d2">
+    <div class="r-label shu">${t.s_traits}</div>
+    <div class="traits">
+      ${wd.traits.map((tr,i)=>`<span class="ttag c${i%5}">${tr}</span>`).join('')}
+    </div>
+  </div>
+
+  <div class="r-card fu d3">
+    <div class="r-label midori">${t.s_ability}</div>
+    <div class="ability-bars">${abBars}</div>
+  </div>
+
+  <div class="r-card fu d4">
+    <div class="r-label kin">${t.s_saga}</div>
+    <div class="saga-box">
+      <div class="saga-label">◎ ${lang==='ja'?'現在の佐賀との繋がり':lang==='en'?'Connection to modern Saga':'現代佐賀的關聯'}</div>
+      <div class="saga-text">${wd.saga.replace(/\n/g,'<br>')}</div>
+    </div>
+  </div>
+
+  <div class="share-wrap fu d5">
+    <div class="share-label">${t.share_label}</div>
+    <div class="share-btns">
+      <a class="btn-share btn-share-x" id="shareX" href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        ${t.share_x}
+      </a>
+      <a class="btn-share btn-share-fb" id="shareFb" href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        ${t.share_fb}
+      </a>
+      <button class="btn-share btn-share-save" id="shareSave">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        ${t.share_save}
+      </button>
+    </div>
+  </div>
+  <button class="btn-retry fu d5" id="retryBtn">${t.retry}</button>`;
+}
+
+function animateAbility(){
+  document.querySelectorAll('.ab-fill').forEach(el=>{
+    el.style.transform=`scaleX(${el.dataset.val})`;
+  });
+}
+
+function attachEvents(){
+  document.querySelectorAll('.lang-btn').forEach(b=>b.onclick=()=>{lang=b.dataset.lang;render();});
+  const sb=document.getElementById('startBtn');
+  if(sb) sb.onclick=()=>{phase='quiz';cur=0;sel=null;tally={T:0,N:0,S:0,A:0,I:0,K:0,M:0,B:0,G:0,D:0,H:0,C:0,X:0,R:0,E:0,J:0};render();};
+  document.querySelectorAll('.choice-btn').forEach(b=>b.onclick=()=>{sel=parseInt(b.dataset.idx);render();});
+  const nb=document.getElementById('nextBtn');
+  if(nb) nb.onclick=()=>{
+    if(sel===null) return;
+    const sc=Q[lang][cur].ch[sel].s;
+    tally[sc]++;
+    if(cur<Q[lang].length-1){cur++;sel=null;render();}
+    else{
+      const map={T:'takanobu',N:'naganobu',S:'nobukane',I:'ieharu',K:'nobukage',M:'narimatsu',B:'naritomi',D:'naoshige',H:'hirai',C:'chiba',X:'chikushi',R:'baba',E:'iekane',J:'aganbou',G:'kumashiro',A:'tabaru'};
+      rkey=map[Object.entries(tally).sort((a,b)=>b[1]-a[1])[0][0]];
+      phase='result';render();
+    }
+  };
+  // 武将カードクリック→モーダル表示
+  document.querySelectorAll('.warrior-card[data-wid]').forEach(card=>{
+    card.onclick=()=>showWarriorModal(card.dataset.wid);
+  });
+
+  const rb=document.getElementById('retryBtn');
+  if(rb) rb.onclick=()=>{phase='intro';render();};
+
+  if(phase==='result' && rkey){
+    const w=W[rkey], wd=w[lang];
+    const siteUrl='https://saga-sengoku.tiiny.site';
+    const txts={
+      ja:'佐賀の戦国武将タイプ診断で「'+wd.name+'（'+wd.sub+'）」と判定されました！\nあなたも試してみてください\n'+siteUrl+'\n#佐賀戦国 #戦国武将診断 #葉隠',
+      en:'I got "'+wd.name+' ('+wd.sub+')" in the Saga Sengoku Warrior Type Test!\nTry it yourself\n'+siteUrl+'\n#SagaSengoku #SamuraiTest #Hagakure',
+      zh:'我在佐賀戰國武將類型診斷中測出了「'+wd.name+'（'+wd.sub+'）」！\n快來挑戰看看\n'+siteUrl+'\n#佐賀戰國 #武將診斷 #葉隱',
+    };
+    const txt=txts[lang]||txts.ja;
+    const xEl=document.getElementById('shareX');
+    const fbEl=document.getElementById('shareFb');
+    const saveEl=document.getElementById('shareSave');
+    if(xEl) xEl.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(txt);
+    if(fbEl) fbEl.href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(siteUrl);
+
+    // 画像保存
+    if(saveEl){
+      saveEl.onclick=function(){
+        // html2canvas CDNを動的ロード
+        if(typeof html2canvas==='undefined'){
+          const s=document.createElement('script');
+          s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+          s.onload=function(){ doCapture(wd, w); };
+          document.head.appendChild(s);
+        } else {
+          doCapture(wd, w);
+        }
+      };
+    }
+  }
+}
+
+function doCapture(wd, w){
+  const resultEl=document.querySelector('.result-hero-band');
+  const cardEls=document.querySelectorAll('.r-card');
+  // キャプチャ対象: result-hero-band + 最初のr-card(プロフィール)
+  const target=document.querySelector('#app .screen');
+  if(!target){ alert('保存に失敗しました'); return; }
+
+  html2canvas(target,{
+    backgroundColor: '#1a3a5c',
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    windowWidth: 640,
+  }).then(function(canvas){
+    const link=document.createElement('a');
+    link.download='saga-sengoku-'+wd.name+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }).catch(function(e){
+    alert('画像の保存に失敗しました。ブラウザの機能でスクリーンショットをお試しください。');
+  });
+}
+
+function showWarriorModal(wid){
+  const w=W[wid];
+  if(!w) return;
+  const wd=w[lang];
+  const acc=w.accentCls||'ai';
+  const ol=document.createElement('div');
+  ol.className='modal-overlay';
+  ol.id='warriorModal';
+  ol.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-stripe"></div>
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-inner">
+        <div class="modal-sensu">${sensuSVG(acc,'sm')}</div>
+        <div class="modal-yomi">${wd.yomi}</div>
+        <div class="modal-name">${wd.name}</div>
+        <div class="modal-sub">${wd.sub}</div>
+        <div class="modal-section-label">◆ ${lang==='ja'?'人物像':lang==='en'?'Profile':'武將介紹'}</div>
+        <p class="modal-desc">${wd.desc}</p>
+        <div class="modal-section-label">◆ ${lang==='ja'?'特性':lang==='en'?'Traits':'特質'}</div>
+        <div class="modal-traits">${wd.traits.map(t=>`<span class="modal-trait">${t}</span>`).join('')}</div>
+        <div class="modal-section-label">◆ ${lang==='ja'?'佐賀ゆかりの地':lang==='en'?'Saga Connection':'佐賀相關之地'}</div>
+        <div class="modal-saga">${wd.saga.replace(/\n/g,'<br>')}</div>
+        <div class="modal-credit">© 佐賀戦国研究会 / Saga Sengoku Research Society</div>
+      </div>
+    </div>`;
+  document.body.appendChild(ol);
+  ol.addEventListener('click', function(e){
+    if(e.target===ol) closeModal();
+  });
+  document.getElementById('modalClose').onclick=closeModal;
+}
+function closeModal(){
+  const m=document.getElementById('warriorModal');
+  if(m) m.remove();
+}
+
+render();
+</script>
+</body>
+</html>

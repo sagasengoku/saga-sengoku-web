@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>龍造寺隆信 系図パズル</title>
+<style>
+  :root{
+    --washi:#efe6d3;
+    --washi-2:#f6efe0;
+    --ink:#221c16;
+    --ink-soft:#5a4f42;
+    --line:#9a8662;
+    --gold:#a9863f;
+    --gold-deep:#7c5f29;
+    --shu:#b3412c;        /* 朱 */
+    --shu-soft:#c9684f;
+    --green:#3f6f3a;
+    --green-bg:#e7efddff;
+    --slot:#fbf6ea;
+    --slot-edge:#bda878;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 20% 0%, #f7f0e1, transparent 60%),
+      radial-gradient(circle at 90% 100%, #ece1c9, transparent 55%),
+      var(--washi);
+    background-attachment:fixed;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+  }
+  /* faint paper grain */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:repeating-linear-gradient(0deg, rgba(120,90,40,.025) 0 1px, transparent 1px 3px);
+    mix-blend-mode:multiply;
+  }
+  .wrap{position:relative;z-index:1;max-width:1220px;margin:0 auto;padding:22px 16px 60px;}
+
+  header.title{text-align:center;margin-bottom:6px;}
+  .seal{
+    display:inline-block;border:2.5px solid var(--shu);color:var(--shu);
+    font-weight:700;letter-spacing:.18em;border-radius:8px;
+    padding:3px 12px;font-size:13px;transform:rotate(-3deg);margin-bottom:10px;
+    background:rgba(179,65,44,.05);
+  }
+  h1{font-size:clamp(24px,5vw,38px);margin:.1em 0 .15em;letter-spacing:.12em;font-weight:700;}
+  h1 .small{font-size:.55em;letter-spacing:.2em;color:var(--gold-deep);display:block;margin-bottom:.1em;}
+  .lead{color:var(--ink-soft);font-size:14px;max-width:640px;margin:6px auto 0;}
+
+  /* controls */
+  .panel{
+    margin:18px auto 14px;max-width:920px;
+    background:linear-gradient(180deg,var(--washi-2),#f1e8d6);
+    border:1px solid #d8c8a4;border-radius:14px;padding:14px 16px;
+    box-shadow:0 2px 0 #d4c4a0, 0 10px 24px -16px rgba(60,40,10,.5);
+    display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;justify-content:center;
+  }
+  .group{display:flex;flex-direction:column;gap:6px;align-items:center;}
+  .group .lbl{font-size:11px;letter-spacing:.16em;color:var(--gold-deep);}
+  .btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+  button{
+    font-family:inherit;cursor:pointer;border:1px solid var(--slot-edge);
+    background:var(--slot);color:var(--ink);border-radius:9px;padding:7px 13px;
+    font-size:14px;letter-spacing:.06em;transition:.15s;
+  }
+  button:hover{background:#fff;border-color:var(--gold);}
+  button.on{background:var(--ink);color:var(--washi);border-color:var(--ink);}
+  button.shu{border-color:var(--shu);color:var(--shu);}
+  button.shu:hover{background:var(--shu);color:#fff;}
+  .stat{display:flex;gap:14px;align-items:center;font-size:14px;}
+  .stat b{color:var(--green);font-size:20px;}
+  .stat .miss b{color:var(--shu);}
+
+  /* zoom row */
+  .zoomrow{max-width:920px;margin:0 auto 6px;display:flex;gap:8px;justify-content:center;align-items:center;color:var(--ink-soft);font-size:12px;}
+  .zoomrow button{padding:4px 11px;font-size:15px;line-height:1;}
+
+  /* stage */
+  .scroller{
+    position:relative;overflow:auto;border:1px solid #d8c8a4;border-radius:14px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0)) ,
+      var(--washi-2);
+    box-shadow:inset 0 0 60px -20px rgba(120,90,40,.35);
+    -webkit-overflow-scrolling:touch;
+  }
+  .stage-spacer{position:relative;}
+  .stage{position:absolute;top:0;left:0;width:1180px;height:720px;transform-origin:top left;}
+  svg.links{position:absolute;inset:0;width:1180px;height:720px;pointer-events:none;}
+
+  .node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;width:max-content;}
+  .role{font-size:11px;letter-spacing:.14em;color:#fff;background:var(--line);padding:1px 8px;border-radius:10px;white-space:nowrap;}
+  .role.k{background:var(--shu);}          /* 本人 */
+  .role.f{background:var(--gold-deep);}     /* 父母系 */
+  .box{
+    min-width:70px;text-align:center;background:#fffdf7;border:1.5px solid #c2a86f;
+    border-radius:8px;padding:7px 12px;font-size:15px;white-space:nowrap;
+    box-shadow:0 1px 0 #e7d9b6, 0 6px 14px -10px rgba(70,50,15,.5);
+    color:var(--ink);user-select:none;
+  }
+  .box.main{border:2.5px solid var(--gold);background:linear-gradient(180deg,#fff7df,#ffeec0);font-weight:700;font-size:16px;box-shadow:0 0 0 1px #fff inset,0 8px 18px -10px rgba(120,80,10,.6);}
+  .note{font-size:10px;color:var(--ink-soft);max-width:150px;text-align:center;line-height:1.3;}
+
+  /* blank slot */
+  .box.slot{
+    background:repeating-linear-gradient(135deg,#f7efdc 0 8px,#f1e7cf 8px 16px);
+    border:1.6px dashed var(--slot-edge);color:#b9a472;min-width:92px;cursor:pointer;
+  }
+  .box.slot::after{content:"？";font-size:17px;color:#b09a64;}
+  .box.slot.target{outline:3px solid var(--shu-soft);outline-offset:2px;}
+  .box.slot.placed{background:var(--green-bg);border:1.5px solid var(--green);color:var(--green);font-weight:700;cursor:default;}
+  .box.slot.placed::after{content:"";}
+  .box.reveal{background:#f0e7d2;border:1.5px solid #c2a86f;color:#7a6a4d;font-style:normal;}
+  .box.reveal::after{content:"";}
+  @keyframes pop{0%{transform:scale(.7);}60%{transform:scale(1.12);}100%{transform:scale(1);}}
+  .pop{animation:pop .32s ease;}
+  @keyframes shk{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+  .shake{animation:shk .35s; border-color:var(--shu)!important;color:var(--shu)!important;}
+
+  /* word bank */
+  .bank-title{max-width:1100px;margin:18px auto 8px;text-align:center;color:var(--gold-deep);letter-spacing:.18em;font-size:13px;}
+  .bank{
+    max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:9px;justify-content:center;
+    min-height:48px;padding:12px;border:1px dashed #cdbb90;border-radius:12px;background:rgba(255,255,255,.35);
+  }
+  .tile{
+    background:#fffdf7;border:1.5px solid var(--gold);border-radius:9px;padding:8px 13px;font-size:15px;
+    cursor:pointer;transition:.13s;box-shadow:0 2px 0 #e3d2a6;white-space:nowrap;
+  }
+  .tile:hover{transform:translateY(-2px);background:#fff;}
+  .tile.sel{background:var(--ink);color:var(--washi);border-color:var(--ink);box-shadow:0 0 0 3px rgba(179,65,44,.25);}
+  .bank.empty::before{content:"札はすべて置かれました";color:#b3a684;font-size:13px;}
+
+  /* adopted reference */
+  .extra{max-width:1100px;margin:22px auto 0;}
+  .extra h3{text-align:center;color:var(--shu);letter-spacing:.18em;font-size:14px;margin:0 0 10px;font-weight:700;}
+  .extra-cards{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .ecard{background:#fffdf7;border:1px solid #d3bf91;border-radius:10px;padding:8px 14px;font-size:14px;text-align:center;min-width:150px;}
+  .ecard .en{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+
+  /* finish */
+  .finish{
+    display:none;max-width:760px;margin:22px auto 0;text-align:center;
+    background:linear-gradient(180deg,#fff7df,#ffeec0);border:2px solid var(--gold);
+    border-radius:16px;padding:18px;box-shadow:0 10px 30px -16px rgba(120,80,10,.6);
+  }
+  .finish.show{display:block;animation:pop .4s ease;}
+  .finish .maru{font-size:42px;color:var(--shu);}
+  .finish .msg{font-size:20px;letter-spacing:.1em;margin:6px 0;font-weight:700;}
+  .finish .sub{font-size:13px;color:var(--ink-soft);}
+
+  .credit{text-align:center;color:#a4936f;font-size:12px;margin-top:30px;letter-spacing:.08em;}
+  .legend{text-align:center;color:var(--ink-soft);font-size:12px;margin:8px auto 0;max-width:720px;}
+  .legend span{margin:0 7px;white-space:nowrap;}
+  .swatch{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:3px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="title">
+    <span class="seal">佐賀戦国研究會</span>
+    <h1><span class="small">系 図 パ ズ ル</span>龍造寺隆信をめぐる人々</h1>
+    <p class="lead">続柄のラベル（父・母・祖父・妻 など）をヒントに、下の名札を空欄へ置いていきましょう。正しく置くと札が定着します。間違えると札は手元に戻ります。</p>
+  </header>
+
+  <div class="panel">
+    <div class="group">
+      <span class="lbl">難 易 度</span>
+      <div class="btns" id="diff">
+        <button data-d="easy">初級（4問）</button>
+        <button data-d="normal" class="on">中級</button>
+        <button data-d="hard">上級</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="lbl">操 作</span>
+      <div class="btns">
+        <button id="reveal" class="shu">答えを見る</button>
+        <button id="reset">もう一度</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="lbl">成 績</span>
+      <div class="stat">
+        <span>正解 <b id="score">0</b>/<span id="total">0</span></span>
+        <span class="miss">手戻り <b id="miss">0</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="zoomrow">
+    <span>表示倍率</span>
+    <button id="zout">－</button>
+    <button id="zfit">フィット</button>
+    <button id="zin">＋</button>
+    <span id="zpct">100%</span>
+    <span>（横スクロールで全体を見られます）</span>
+  </div>
+
+  <div class="scroller" id="scroller">
+    <div class="stage-spacer" id="spacer">
+      <div class="stage" id="stage">
+        <svg class="links" id="links" viewBox="0 0 1180 720" preserveAspectRatio="none"></svg>
+        <!-- nodes injected -->
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="swatch" style="background:var(--gold)"></span>太枠＝ご本人（隆信）</span>
+    <span><span class="swatch" style="background:var(--green)"></span>正解で定着</span>
+    <span><span class="swatch" style="background:var(--shu)"></span>朱ラベル＝本人</span>
+    <span>札やマスをタップ→空欄をタップで配置</span>
+  </div>
+
+  <div class="bank-title">名 札（ここから選んで置く）</div>
+  <div class="bank" id="bank"></div>
+
+  <div class="finish" id="finish">
+    <div class="maru">花丸</div>
+    <div class="msg">全問正解、お見事なり。</div>
+    <div class="sub">難易度を上げて、より深い世代まで挑んでみましょう。</div>
+  </div>
+
+  <div class="extra">
+    <h3>― 養子・養女（参考） ―</h3>
+    <div class="extra-cards" id="adopted"></div>
+  </div>
+
+  <p class="credit">系図出典：深川 作成（2025.2/8）／学習用パズル</p>
+</div>
+
+<script>
+/* ---------- データ：隆信を中心とした系図 ---------- */
+const PEOPLE = [
+  {id:'taneie',  name:'龍造寺胤家',   cx:150, cy:55,  note:'妻不明'},
+  {id:'kotorii', name:'小鳥居信元娘', cx:840, cy:55},
+  {id:'yasuie',  name:'龍造寺康家',   cx:1010,cy:55},
+  {id:'oho',     name:'於保宗親娘',   cx:330, cy:165},
+  {id:'iekazu',  name:'龍造寺家和',   cx:480, cy:165, role:'曽祖父', side:'f'},
+  {id:'katada',  name:'片田江家定娘', cx:750, cy:165},
+  {id:'iekane',  name:'龍造寺家兼',   cx:915, cy:165, role:'曽祖父', side:'f'},
+  {id:'myoin',   name:'妙因尼',       cx:245, cy:275, role:'祖母', side:'f', note:'加昌院'},
+  {id:'taneyori',name:'龍造寺胤和',   cx:400, cy:275, role:'祖父', side:'f'},
+  {id:'kambara', name:'蒲原家秀娘',   cx:660, cy:275},
+  {id:'iezumi',  name:'龍造寺家純',   cx:825, cy:275, role:'祖父', side:'f'},
+  {id:'keigin',  name:'慶誾尼',       cx:505, cy:390, role:'母', side:'f'},
+  {id:'chikaie', name:'龍造寺周家',   cx:665, cy:390, role:'父', side:'f'},
+  {id:'soginni', name:'宗誾尼',       cx:430, cy:505, role:'妻', side:'f', note:'龍造寺家門の娘／前夫は龍造寺胤栄'},
+  {id:'takanobu',name:'龍造寺隆信',   cx:610, cy:505, role:'本人', main:true, side:'k'},
+  {id:'masaie',  name:'龍造寺政家',   cx:300, cy:630, role:'長男'},
+  {id:'ietane',  name:'江上家種',     cx:455, cy:630, role:'次男'},
+  {id:'ienobu',  name:'後藤家信',     cx:610, cy:630, role:'三男'},
+  {id:'ieharu',  name:'龍造寺家晴妻', cx:780, cy:630, role:'長女'},
+  {id:'nobuhisa',name:'西郷信尚妻',   cx:950, cy:630, role:'次女'},
+];
+const SPOUSES = [
+  ['yasuie','kotorii'],['iekazu','oho'],['iekane','katada'],
+  ['taneyori','myoin'],['iezumi','kambara'],['chikaie','keigin'],['takanobu','soginni'],
+];
+const FAMILIES = [
+  {parents:['yasuie','kotorii'], children:['iekane']},
+  {parents:['iekane','katada'],  children:['iezumi']},
+  {parents:['iezumi','kambara'], children:['chikaie']},
+  {parents:['taneie'],           children:['myoin']},
+  {parents:['iekazu','oho'],     children:['taneyori']},
+  {parents:['taneyori','myoin'], children:['keigin']},
+  {parents:['chikaie','keigin'], children:['takanobu']},
+  {parents:['takanobu','soginni'], children:['masaie','ietane','ienobu','ieharu','nobuhisa']},
+];
+const ADOPTED = [
+  {name:'龍造寺家均', en:'養子（後藤弥次郎・晴明）'},
+  {name:'秀の前・お安', en:'養女'},
+  {name:'玉鶴姫', en:'養女？（蒲池鎮並の妻）'},
+];
+
+const BLANKS = {
+  easy:   ['takanobu','chikaie','keigin','soginni'],
+  normal: ['chikaie','keigin','soginni','iezumi','kambara','taneyori','myoin','masaie','ietane','ienobu','ieharu','nobuhisa'],
+  hard:   PEOPLE.map(p=>p.id),
+};
+
+const byId = Object.fromEntries(PEOPLE.map(p=>[p.id,p]));
+const stage = document.getElementById('stage');
+const svg   = document.getElementById('links');
+const bank  = document.getElementById('bank');
+const SVGNS = 'http://www.w3.org/2000/svg';
+const H = 22; // box half-height for line routing
+
+let state = { diff:'normal', blanks:new Set(), placed:new Set(), selected:null, score:0, miss:0, revealed:false };
+
+/* ---------- 線を描く ---------- */
+function line(x1,y1,x2,y2,w,col){
+  const l=document.createElementNS(SVGNS,'line');
+  l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+  l.setAttribute('stroke',col||'#9a8662');l.setAttribute('stroke-width',w||1.6);
+  l.setAttribute('stroke-linecap','round');svg.appendChild(l);
+}
+function drawLinks(){
+  svg.innerHTML='';
+  SPOUSES.forEach(([a,b])=>{
+    const A=byId[a],B=byId[b];
+    line(A.cx,A.cy,B.cx,B.cy,2.2,'#b08f4e');
+  });
+  FAMILIES.forEach(fam=>{
+    const ps=fam.parents.map(id=>byId[id]);
+    const px = ps.reduce((s,p)=>s+p.cx,0)/ps.length;
+    const py = ps[0].cy;
+    const kids=fam.children.map(id=>byId[id]);
+    const topY = Math.min(...kids.map(k=>k.cy-H));
+    const busY = py + (topY-py)*0.55;
+    line(px,py,px,busY,1.6);                              // stem
+    const xs=kids.map(k=>k.cx).concat(px);
+    line(Math.min(...xs),busY,Math.max(...xs),busY,1.6);  // bus
+    kids.forEach(k=>line(k.cx,busY,k.cx,k.cy-H,1.6));     // drops
+  });
+}
+
+/* ---------- ノード描画 ---------- */
+function makeNodes(){
+  [...stage.querySelectorAll('.node')].forEach(n=>n.remove());
+  PEOPLE.forEach(p=>{
+    const node=document.createElement('div');
+    node.className='node';node.style.left=p.cx+'px';node.style.top=p.cy+'px';
+    let roleCls = p.main?'k':(p.side==='f'?'f':'');
+    if(p.role){
+      const r=document.createElement('div');r.className='role '+roleCls;r.textContent=p.role;node.appendChild(r);
+    }
+    const box=document.createElement('div');
+    box.className='box'+(p.main?' main':'');
+    box.dataset.id=p.id;
+    if(state.blanks.has(p.id)){
+      box.classList.add('slot');
+      box.addEventListener('click',()=>onSlot(p.id,box));
+    }else{
+      box.textContent=p.name;
+    }
+    node.appendChild(box);
+    if(p.note){const nt=document.createElement('div');nt.className='note';nt.textContent=p.note;node.appendChild(nt);}
+    stage.appendChild(node);
+  });
+}
+
+/* ---------- 名札 ---------- */
+function makeBank(){
+  bank.innerHTML='';
+  const ids=[...state.blanks].filter(id=>!state.placed.has(id));
+  shuffle(ids);
+  ids.forEach(id=>{
+    const t=document.createElement('div');
+    t.className='tile';t.dataset.id=id;t.textContent=byId[id].name;
+    t.addEventListener('click',()=>selectTile(id,t));
+    bank.appendChild(t);
+  });
+  bank.classList.toggle('empty', ids.length===0 && state.blanks.size>0);
+}
+function selectTile(id,el){
+  if(state.revealed) return;
+  if(state.selected===id){state.selected=null;el.classList.remove('sel');return;}
+  document.querySelectorAll('.tile.sel').forEach(t=>t.classList.remove('sel'));
+  state.selected=id;el.classList.add('sel');
+  highlightTargets(true);
+}
+function highlightTargets(on){
+  document.querySelectorAll('.box.slot:not(.placed)').forEach(s=>s.classList.toggle('target',on));
+}
+
+/* ---------- マス操作 ---------- */
+function onSlot(id,box){
+  if(state.revealed || box.classList.contains('placed')) return;
+  if(!state.selected) return;
+  const guess=state.selected;
+  if(guess===id){
+    box.classList.add('placed','pop');box.textContent=byId[id].name;
+    setTimeout(()=>box.classList.remove('pop'),320);
+    state.placed.add(id);state.score++;
+    const tile=bank.querySelector('.tile.sel');if(tile)tile.remove();
+    state.selected=null;highlightTargets(false);
+    bank.classList.toggle('empty', bank.children.length===0);
+    updateStat();checkFinish();
+  }else{
+    box.classList.add('shake');
+    const tile=bank.querySelector('.tile.sel');if(tile)tile.classList.add('shake');
+    state.miss++;updateStat();
+    setTimeout(()=>{box.classList.remove('shake');if(tile)tile.classList.remove('shake');},380);
+  }
+}
+
+function updateStat(){
+  document.getElementById('score').textContent=state.score;
+  document.getElementById('miss').textContent=state.miss;
+  document.getElementById('total').textContent=state.blanks.size;
+}
+function checkFinish(){
+  const f=document.getElementById('finish');
+  if(state.score===state.blanks.size && state.blanks.size>0){f.classList.add('show');}
+  else f.classList.remove('show');
+}
+
+/* ---------- 答えを見る ---------- */
+function toggleReveal(){
+  state.revealed=!state.revealed;
+  const btn=document.getElementById('reveal');
+  btn.classList.toggle('on',state.revealed);
+  btn.textContent=state.revealed?'パズルに戻る':'答えを見る';
+  document.querySelectorAll('.box.slot').forEach(box=>{
+    const id=box.dataset.id;
+    if(state.revealed){
+      if(!box.classList.contains('placed')){box.classList.add('reveal');box.textContent=byId[id].name;}
+    }else{
+      if(box.classList.contains('reveal')){box.classList.remove('reveal');box.textContent='';}
+    }
+  });
+  bank.style.opacity=state.revealed?.35:1;
+  bank.style.pointerEvents=state.revealed?'none':'auto';
+}
+
+/* ---------- 初期化 ---------- */
+function setup(diff){
+  state={diff,blanks:new Set(BLANKS[diff]),placed:new Set(),selected:null,score:0,miss:0,revealed:false};
+  document.getElementById('finish').classList.remove('show');
+  const rb=document.getElementById('reveal');rb.classList.remove('on');rb.textContent='答えを見る';
+  bank.style.opacity=1;bank.style.pointerEvents='auto';
+  makeNodes();drawLinks();makeBank();updateStat();
+}
+
+/* ---------- ユーティリティ ---------- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ---------- 養子・養女 ---------- */
+(function(){const c=document.getElementById('adopted');
+  ADOPTED.forEach(a=>{const d=document.createElement('div');d.className='ecard';
+    d.innerHTML='<div>'+a.name+'</div><div class="en">'+a.en+'</div>';c.appendChild(d);});
+})();
+
+/* ---------- ズーム ---------- */
+const scroller=document.getElementById('scroller');
+const spacer=document.getElementById('spacer');
+const BASE_W=1180,BASE_H=720;let scale=1;
+function applyScale(s){
+  scale=Math.max(.4,Math.min(1.7,s));
+  stage.style.transform='scale('+scale+')';
+  spacer.style.width=(BASE_W*scale)+'px';
+  spacer.style.height=(BASE_H*scale)+'px';
+  document.getElementById('zpct').textContent=Math.round(scale*100)+'%';
+}
+function fit(){const w=scroller.clientWidth-2;applyScale(Math.min(1,w/BASE_W));}
+document.getElementById('zin').onclick=()=>applyScale(scale+.15);
+document.getElementById('zout').onclick=()=>applyScale(scale-.15);
+document.getElementById('zfit').onclick=fit;
+window.addEventListener('resize',()=>{ if(scale<=fitScale()+.01) fit(); });
+function fitScale(){return Math.min(1,(scroller.clientWidth-2)/BASE_W);}
+
+/* ---------- イベント ---------- */
+document.getElementById('diff').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-d]');if(!b)return;
+  document.querySelectorAll('#diff button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');setup(b.dataset.d);
+});
+document.getElementById('reset').onclick=()=>setup(state.diff);
+document.getElementById('reveal').onclick=toggleReveal;
+
+/* start */
+setup('normal');
+fit();
+</script>
+</body>
+</html>
